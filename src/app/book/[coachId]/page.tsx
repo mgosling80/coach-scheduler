@@ -13,18 +13,19 @@ export default async function CoachClassTypesPage({
   const authed = await requireAuth();
   const supabase = await createClient();
 
-  // Verify approval
-  const now = new Date().toISOString();
   const { data: approval } = await supabase
     .from('coach_approvals')
     .select('status, expires_at')
     .eq('student_id', authed.user.id)
     .eq('coach_id', coachId)
     .eq('status', 'approved')
-    .or(`expires_at.is.null,expires_at.gt.${now}`)
     .maybeSingle();
 
-  if (!approval) notFound();
+  const isValid =
+    approval &&
+    (approval.expires_at === null || new Date(approval.expires_at) > new Date());
+
+  if (!isValid) notFound();
 
   const { data: coach } = await supabase
     .from('profiles')

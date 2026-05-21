@@ -6,16 +6,17 @@ export default async function BookIndexPage() {
   const authed = await requireAuth();
   const supabase = await createClient();
 
-  // Coaches this student is approved with (non-expired)
-  const now = new Date().toISOString();
   const { data: approvals } = await supabase
     .from('coach_approvals')
-    .select('coach_id, status, expires_at')
+    .select('coach_id, expires_at')
     .eq('student_id', authed.user.id)
-    .eq('status', 'approved')
-    .or(`expires_at.is.null,expires_at.gt.${now}`);
+    .eq('status', 'approved');
 
-  const coachIds = (approvals ?? []).map((a) => a.coach_id);
+  const now = new Date();
+  const validApprovals = (approvals ?? []).filter(
+    (a) => a.expires_at === null || new Date(a.expires_at) > now
+  );
+  const coachIds = validApprovals.map((a) => a.coach_id);
 
   const { data: coaches } = coachIds.length
     ? await supabase

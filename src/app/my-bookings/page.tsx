@@ -26,8 +26,29 @@ export default async function MyBookingsPage() {
     .in('status', ['confirmed'])
     .order('booked_at', { ascending: false });
 
-  // Resolve coach names and class type names
-  const sessionList = (bookings ?? []).map((b) => b.sessions).flat();
+  const { data: waitlist } = await supabase
+    .from('waitlist_entries')
+    .select(`
+      id,
+      position,
+      joined_at,
+      promoted_at,
+      promotion_expires_at,
+      sessions!inner (
+        id,
+        start_at,
+        end_at,
+        coach_id,
+        class_type_id
+      )
+    `)
+    .eq('student_id', authed.user.id)
+    .order('joined_at', { ascending: false });
+
+  const sessionList = [
+    ...(bookings ?? []).map((b) => b.sessions).flat(),
+    ...(waitlist ?? []).map((w) => w.sessions).flat(),
+  ];
   const coachIds = Array.from(new Set(sessionList.map((s) => s.coach_id)));
   const classTypeIds = Array.from(new Set(sessionList.map((s) => s.class_type_id)));
 
@@ -42,7 +63,7 @@ export default async function MyBookingsPage() {
   const coachMap = new Map((coaches ?? []).map((c) => [c.id, c.full_name]));
   const ctMap = new Map((classTypes ?? []).map((ct) => [ct.id, ct]));
 
-  const items = (bookings ?? []).map((b) => {
+  const bookingItems = (bookings ?? []).map((b) => {
     const s = Array.isArray(b.sessions) ? b.sessions[0] : b.sessions;
     return {
       bookingId: b.id,
@@ -55,6 +76,21 @@ export default async function MyBookingsPage() {
       classTypeName: ctMap.get(s.class_type_id)?.name ?? 'Unknown',
       classTypeColor: ctMap.get(s.class_type_id)?.color ?? '#3b82f6',
       cancelled: s.cancelled,
+    };
+  });
+
+  const waitlistItems = (waitlist ?? []).map((w) => {
+    const s = Array.isArray(w.sessions) ? w.sessions[0] : w.sessions;
+    return {
+      waitlistId: w.id,
+      position: w.position,
+      promotedAt: w.promoted_at,
+      promotionExpiresAt: w.promotion_expires_at,
+      sessionId: s.id,
+      startAt: s.start_at,
+      coachName: coachMap.get(s.coach_id) ?? 'Unknown',
+      classTypeName: ctMap.get(s.class_type_id)?.name ?? 'Unknown',
+      classTypeColor: ctMap.get(s.class_type_id)?.color ?? '#3b82f6',
     };
   });
 
@@ -75,7 +111,7 @@ export default async function MyBookingsPage() {
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">My bookings</h2>
-        <MyBookingsClient bookings={items} />
+        <MyBookingsClient bookings={bookingItems} waitlist={waitlistItems} />
       </main>
     </div>
   );

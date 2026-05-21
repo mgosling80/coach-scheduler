@@ -8,7 +8,6 @@ export async function cancelBooking(bookingId: string) {
   const authed = await requireAuth();
   const supabase = await createClient();
 
-  // Fetch booking + session for window check
   const { data: booking } = await supabase
     .from('bookings')
     .select('id, student_id, session_id, sessions!inner(coach_id, class_type_id, start_at)')
@@ -21,7 +20,6 @@ export async function cancelBooking(bookingId: string) {
 
   const session = Array.isArray(booking.sessions) ? booking.sessions[0] : booking.sessions;
 
-  // Resolve cancel window
   const { data: ct } = await supabase
     .from('class_types')
     .select('cancel_window_hours')
@@ -47,6 +45,22 @@ export async function cancelBooking(bookingId: string) {
       cancelled_at: new Date().toISOString(),
     })
     .eq('id', bookingId);
+
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/my-bookings');
+  return { ok: true };
+}
+
+export async function leaveWaitlist(waitlistId: string) {
+  const authed = await requireAuth();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from('waitlist_entries')
+    .delete()
+    .eq('id', waitlistId)
+    .eq('student_id', authed.user.id);
 
   if (error) return { ok: false, error: error.message };
 
