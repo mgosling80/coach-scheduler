@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { requireRole } from '@/lib/auth';
-import { CalendarDays, User, ListChecks, Clock, Home } from 'lucide-react';
+import { CalendarDays, User, ListChecks, Clock, Home, CalendarOff } from 'lucide-react';
 
 export default async function CoachLayout({
   children,
@@ -13,8 +13,9 @@ export default async function CoachLayout({
     { href: '/dashboard', label: 'Dashboard', icon: Home },
     { href: '/coach/profile', label: 'My profile', icon: User },
     { href: '/coach/class-types', label: 'Class types', icon: ListChecks },
+    { href: '/coach/availability', label: 'Availability', icon: Clock },
+    { href: '/coach/blackouts', label: 'Blackouts', icon: CalendarOff },
     { href: '/coach/schedule', label: 'Schedule', icon: CalendarDays, soon: true },
-    { href: '/coach/availability', label: 'Availability', icon: Clock, soon: true },
   ];
 
   return (
