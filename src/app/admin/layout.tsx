@@ -1,22 +1,17 @@
 import Link from 'next/link';
 import { requireRole } from '@/lib/auth';
-import { CalendarDays, User, ListChecks, Clock, Home, CalendarOff, Users } from 'lucide-react';
+import { Home, Users, UserPlus } from 'lucide-react';
 
-export default async function CoachLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const authed = await requireRole('coach');
+  const authed = await requireRole('admin');
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: Home },
-    { href: '/coach/profile', label: 'My profile', icon: User },
-    { href: '/coach/class-types', label: 'Class types', icon: ListChecks },
-    { href: '/coach/availability', label: 'Availability', icon: Clock },
-    { href: '/coach/blackouts', label: 'Blackouts', icon: CalendarOff },
-    { href: '/coach/students', label: 'Students', icon: Users },
-    { href: '/coach/schedule', label: 'Schedule', icon: CalendarDays, soon: true },
+    { href: '/admin/students', label: 'All students', icon: Users },
   ];
 
   return (
@@ -24,7 +19,7 @@ export default async function CoachLayout({
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
-            Coach Scheduler
+            Coach Scheduler — Admin
           </Link>
           <div className="flex items-center gap-4 text-sm">
             <span className="text-gray-600 hidden sm:inline">{authed.user.email}</span>
@@ -44,27 +39,18 @@ export default async function CoachLayout({
               const Icon = item.icon;
               return (
                 <li key={item.href}>
-                  {item.soon ? (
-                    <span className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 cursor-not-allowed">
-                      <Icon className="w-4 h-4" />
-                      {item.label}
-                      <span className="text-xs ml-auto">soon</span>
-                    </span>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-                    >
-                      <Icon className="w-4 h-4" />
-                      {item.label}
-                    </Link>
-                  )}
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
-
         <main>{children}</main>
       </div>
     </div>
