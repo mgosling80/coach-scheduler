@@ -98,7 +98,7 @@ export async function getBookableSlots(
         .eq('student_id', studentId)
     : { data: [] };
 
-  const sessionsByStart = new Map<string, typeof sessions[number]>();
+  const sessionsByStart = new Map<string, NonNullable<typeof sessions>[number]>();
   (sessions ?? []).forEach((s) => {
     if (!s.cancelled) sessionsByStart.set(s.start_at, s);
   });
