@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { requireRole } from '@/lib/auth';
-import { Home, Users, UserPlus } from 'lucide-react';
+import { Home, Users, Repeat } from 'lucide-react';
 
 export default async function AdminLayout({
   children,
@@ -12,6 +12,7 @@ export default async function AdminLayout({
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: Home },
     { href: '/admin/students', label: 'All students', icon: Users },
+    { href: '/admin/recurring', label: 'Recurring requests', icon: Repeat },
   ];
 
   return (
