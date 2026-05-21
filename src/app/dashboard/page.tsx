@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
-import { ArrowRight, Calendar, Users, Shield } from 'lucide-react';
+import { ArrowRight, Calendar, Users, Shield, Bell } from 'lucide-react';
 
 export default async function DashboardPage() {
   const authed = await requireAuth();
@@ -68,21 +68,11 @@ export default async function DashboardPage() {
         )}
 
         {isStudent && !needsOnboarding && (
-          <DashCard
-            href="/book"
-            icon={Calendar}
-            title="Book a session"
-            description="See available times with your coaches."
-          />
+          <DashCard href="/book" icon={Calendar} title="Book a session" description="See available times with your coaches." />
         )}
 
         {isStudent && !needsOnboarding && (
-          <DashCard
-            href="/my-bookings"
-            icon={Calendar}
-            title="My bookings"
-            description="See upcoming and past sessions."
-          />
+          <DashCard href="/my-bookings" icon={Calendar} title="My bookings" description="See upcoming and past sessions." />
         )}
 
         {isCoach && (
@@ -102,6 +92,13 @@ export default async function DashboardPage() {
             description="Assign students to coaches and manage approvals."
           />
         )}
+
+        <DashCard
+          href="/preferences"
+          icon={Bell}
+          title="Notification preferences"
+          description="Choose how and when we contact you."
+        />
       </main>
     </div>
   );

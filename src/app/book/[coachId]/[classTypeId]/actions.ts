@@ -3,6 +3,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { notifyStudent } from '@/lib/notify/dispatch';
+import { formatDateTime12 } from '@/lib/format';
 
 export async function bookSlot(params: {
   coachId: string;
@@ -13,23 +15,21 @@ export async function bookSlot(params: {
   const authed = await requireAuth();
   const supabase = await createClient();
 
-  // Verify approval
-  const now = new Date().toISOString();
   const { data: approval } = await supabase
     .from('coach_approvals')
     .select('status, expires_at')
     .eq('student_id', authed.user.id)
     .eq('coach_id', params.coachId)
     .eq('status', 'approved')
-    .or(`expires_at.is.null,expires_at.gt.${now}`)
     .maybeSingle();
 
-  if (!approval) return { ok: false, error: 'Not approved with this coach.' };
+  const isApproved =
+    approval && (approval.expires_at === null || new Date(approval.expires_at) > new Date());
+  if (!isApproved) return { ok: false, error: 'Not approved with this coach.' };
 
-  // Get capacity from class type
   const { data: classType } = await supabase
     .from('class_types')
-    .select('capacity, booking_window_hours, coach_id')
+    .select('capacity, booking_window_hours, coach_id, name')
     .eq('id', params.classTypeId)
     .eq('coach_id', params.coachId)
     .eq('is_active', true)
@@ -37,20 +37,19 @@ export async function bookSlot(params: {
 
   if (!classType) return { ok: false, error: 'Class type not found.' };
 
-  // Check booking window
   const { data: coachProfile } = await supabase
     .from('coach_profiles')
     .select('default_booking_window_hours')
     .eq('user_id', params.coachId)
     .maybeSingle();
 
-  const bookingWindowHours = classType.booking_window_hours ?? coachProfile?.default_booking_window_hours ?? 24;
+  const bookingWindowHours =
+    classType.booking_window_hours ?? coachProfile?.default_booking_window_hours ?? 24;
   const cutoff = new Date(Date.now() + bookingWindowHours * 3600 * 1000);
   if (new Date(params.startIso) < cutoff) {
     return { ok: false, error: 'Booking window has closed for this slot.' };
   }
 
-  // Find or create session
   const { data: existingSession } = await supabase
     .from('sessions')
     .select('id, capacity, cancelled')
@@ -80,7 +79,6 @@ export async function bookSlot(params: {
       .single();
 
     if (sessionErr || !newSession) {
-      // Race: someone else just created it
       const { data: retry } = await supabase
         .from('sessions')
         .select('id, capacity, cancelled')
@@ -97,17 +95,21 @@ export async function bookSlot(params: {
     }
   }
 
-  // Count current confirmed bookings
-  const { count } = await supabase
-    .from('bookings')
-    .select('id', { count: 'exact', head: true })
-    .eq('session_id', sessionId)
-    .in('status', ['confirmed', 'completed', 'no_show']);
+  // Use the security definer function so we count ALL bookings, not just our own
+  const { data: countData } = await supabase.rpc('session_confirmed_count', {
+    p_session_id: sessionId,
+  });
+  const bookedCount = (countData as number) ?? 0;
 
-  const bookedCount = count ?? 0;
+  const { data: coach } = await supabase
+    .from('profiles')
+    .select('full_name')
+    .eq('id', params.coachId)
+    .maybeSingle();
+  const coachName = coach?.full_name ?? 'your coach';
+  const startStr = formatDateTime12(params.startIso);
 
   if (bookedCount >= capacity) {
-    // Add to waitlist
     const { data: existing } = await supabase
       .from('waitlist_entries')
       .select('id')
@@ -117,7 +119,6 @@ export async function bookSlot(params: {
 
     if (existing) return { ok: true, waitlisted: true };
 
-    // Get next position
     const { count: wlCount } = await supabase
       .from('waitlist_entries')
       .select('id', { count: 'exact', head: true })
@@ -134,18 +135,27 @@ export async function bookSlot(params: {
 
     if (wlErr) return { ok: false, error: wlErr.message };
 
+    await notifyStudent(supabase, {
+      studentId: authed.user.id,
+      subject: `Added to waitlist for ${classType.name}`,
+      body: `You're on the waitlist for ${classType.name} with ${coachName} on ${startStr}. We'll let you know if a spot opens.`,
+      relatedSessionId: sessionId,
+    });
+
     revalidatePath(`/book/${params.coachId}/${params.classTypeId}`);
+    revalidatePath('/my-bookings');
     return { ok: true, waitlisted: true };
   }
 
-  // Book it
-  const { error: bookErr } = await supabase
+  const { data: newBooking, error: bookErr } = await supabase
     .from('bookings')
     .insert({
       session_id: sessionId,
       student_id: authed.user.id,
       status: 'confirmed',
-    });
+    })
+    .select('id')
+    .single();
 
   if (bookErr) {
     if (bookErr.message.toLowerCase().includes('duplicate')) {
@@ -153,6 +163,14 @@ export async function bookSlot(params: {
     }
     return { ok: false, error: bookErr.message };
   }
+
+  await notifyStudent(supabase, {
+    studentId: authed.user.id,
+    subject: `Confirmed: ${classType.name} with ${coachName}`,
+    body: `Your ${classType.name} session with ${coachName} on ${startStr} is confirmed.`,
+    relatedBookingId: newBooking.id,
+    relatedSessionId: sessionId,
+  });
 
   revalidatePath(`/book/${params.coachId}/${params.classTypeId}`);
   revalidatePath('/my-bookings');

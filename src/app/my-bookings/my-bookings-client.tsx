@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { cancelBooking, leaveWaitlist } from './actions';
+import { cancelBooking, leaveWaitlist, acceptWaitlistOffer } from './actions';
 import { formatDateTime12 } from '@/lib/format';
 
 type BookingItem = {
@@ -38,11 +38,18 @@ export function MyBookingsClient({
   const upcoming = bookings.filter((b) => new Date(b.startAt) > new Date() && !b.cancelled);
   const past = bookings.filter((b) => new Date(b.startAt) <= new Date() || b.cancelled);
   const upcomingWaitlist = waitlist.filter((w) => new Date(w.startAt) > new Date());
+  const offers = upcomingWaitlist.filter(
+    (w) => w.promotedAt && (!w.promotionExpiresAt || new Date(w.promotionExpiresAt) > new Date())
+  );
+  const stillWaiting = upcomingWaitlist.filter(
+    (w) => !w.promotedAt || (w.promotionExpiresAt && new Date(w.promotionExpiresAt) <= new Date())
+  );
 
   return (
     <div className="space-y-4">
+      {offers.length > 0 && <OffersSection items={offers} />}
       <BookingSection title="Upcoming" items={upcoming} cancellable />
-      {upcomingWaitlist.length > 0 && <WaitlistSection items={upcomingWaitlist} />}
+      {stillWaiting.length > 0 && <WaitlistSection items={stillWaiting} />}
       <BookingSection title="Past" items={past} cancellable={false} />
     </div>
   );
@@ -117,6 +124,69 @@ function BookingRow({ item, cancellable }: { item: BookingItem; cancellable: boo
   );
 }
 
+function OffersSection({ items }: { items: WaitlistItem[] }) {
+  return (
+    <div className="bg-green-50 border border-green-200 rounded-lg shadow">
+      <div className="p-4 border-b border-green-200">
+        <h3 className="text-sm font-semibold text-green-900 uppercase tracking-wide">
+          Spots available — accept now
+        </h3>
+        <p className="text-xs text-green-800 mt-1">
+          A spot opened from your waitlist. Accept before the offer expires.
+        </p>
+      </div>
+      <ul className="divide-y divide-green-200">
+        {items.map((i) => (
+          <OfferRow key={i.waitlistId} item={i} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function OfferRow({ item }: { item: WaitlistItem }) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  function handleAccept() {
+    setError(null);
+    startTransition(async () => {
+      const result = await acceptWaitlistOffer(item.waitlistId);
+      if (!result.ok) setError(result.error ?? 'Failed.');
+    });
+  }
+
+  const expiresAt = item.promotionExpiresAt ? new Date(item.promotionExpiresAt) : null;
+  const minutesLeft = expiresAt ? Math.max(0, Math.floor((expiresAt.getTime() - Date.now()) / 60000)) : null;
+
+  return (
+    <li className="p-4 flex items-start justify-between gap-4">
+      <div className="flex items-start gap-3 min-w-0">
+        <span
+          className="w-3 h-3 rounded-full flex-shrink-0 mt-1.5"
+          style={{ backgroundColor: item.classTypeColor }}
+        />
+        <div className="min-w-0">
+          <div className="font-medium text-gray-900">{item.classTypeName}</div>
+          <div className="text-sm text-gray-600">with {item.coachName}</div>
+          <div className="text-sm text-gray-500 mt-0.5">{formatDateTime12(item.startAt)}</div>
+          {minutesLeft !== null && (
+            <div className="text-xs text-green-700 mt-1">{minutesLeft} min left to accept</div>
+          )}
+          {error && <div className="text-xs text-red-600 mt-1">{error}</div>}
+        </div>
+      </div>
+      <button
+        onClick={handleAccept}
+        disabled={pending}
+        className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex-shrink-0"
+      >
+        {pending ? 'Accepting...' : 'Accept'}
+      </button>
+    </li>
+  );
+}
+
 function WaitlistSection({ items }: { items: WaitlistItem[] }) {
   return (
     <div className="bg-white rounded-lg shadow">
@@ -125,7 +195,7 @@ function WaitlistSection({ items }: { items: WaitlistItem[] }) {
           On waitlist ({items.length})
         </h3>
         <p className="text-xs text-gray-500 mt-1">
-          You&apos;ll be notified if a spot opens. Coach decides how long you have to accept.
+          You&apos;ll be notified if a spot opens.
         </p>
       </div>
       <ul className="divide-y divide-gray-200">
@@ -174,7 +244,7 @@ function WaitlistRow({ item }: { item: WaitlistItem }) {
         disabled={pending}
         className="text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50 flex-shrink-0"
       >
-        Leave waitlist
+        Leave
       </button>
     </li>
   );
