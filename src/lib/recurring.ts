@@ -95,7 +95,7 @@ export async function computeRecurringInstances(
         .in('status', ['confirmed', 'completed', 'no_show'])
     : { data: [] };
 
-  const sessionMap = new Map<string, typeof sessions[number]>();
+  const sessionMap = new Map<string, NonNullable<typeof sessions>[number]>();
   (sessions ?? []).forEach((s) => sessionMap.set(s.start_at, s));
 
   const bookingCountBySession = new Map<string, number>();
