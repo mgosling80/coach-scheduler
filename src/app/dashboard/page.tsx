@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
-import { ArrowRight, Calendar, Users, Shield, Bell } from 'lucide-react';
+import { ArrowRight, Calendar, Users, Shield, Bell, Settings } from 'lucide-react';
 
 export default async function DashboardPage() {
   const authed = await requireAuth();
@@ -98,6 +98,13 @@ export default async function DashboardPage() {
           icon={Bell}
           title="Notification preferences"
           description="Choose how and when we contact you."
+        />
+
+        <DashCard
+          href="/account"
+          icon={Settings}
+          title="Account"
+          description="Change email, password, or delete account."
         />
       </main>
     </div>
