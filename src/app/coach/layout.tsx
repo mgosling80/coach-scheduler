@@ -16,13 +16,13 @@ export default async function CoachLayout({
     { href: '/coach/availability', label: 'Availability', icon: Clock },
     { href: '/coach/blackouts', label: 'Blackouts', icon: CalendarOff },
     { href: '/coach/students', label: 'Students', icon: Users },
-    { href: '/coach/schedule', label: 'Schedule', icon: CalendarDays, soon: true },
+    { href: '/coach/schedule', label: 'Schedule', icon: CalendarDays },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
             Coach Scheduler
           </Link>
@@ -37,28 +37,20 @@ export default async function CoachLayout({
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6">
         <nav className="bg-white rounded-lg shadow p-3 h-fit">
           <ul className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
                 <li key={item.href}>
-                  {item.soon ? (
-                    <span className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 cursor-not-allowed">
-                      <Icon className="w-4 h-4" />
-                      {item.label}
-                      <span className="text-xs ml-auto">soon</span>
-                    </span>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-                    >
-                      <Icon className="w-4 h-4" />
-                      {item.label}
-                    </Link>
-                  )}
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
                 </li>
               );
             })}
