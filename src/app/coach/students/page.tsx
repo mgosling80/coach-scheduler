@@ -27,11 +27,23 @@ export default async function CoachStudentsPage() {
         .in('user_id', studentIds)
     : { data: [] };
 
+  // Aggregate no-show counts
+  const { data: noShowRows } = await supabase.rpc('coach_student_noshow_counts', {
+    p_coach_id: authed.user.id,
+  });
+
+  type NoShowRow = { student_id: string; no_show_count: number };
+  const noShowMap: Record<string, number> = {};
+  ((noShowRows as NoShowRow[]) ?? []).forEach((r) => {
+    noShowMap[r.student_id] = r.no_show_count;
+  });
+
   return (
     <StudentsListClient
       approvals={approvals ?? []}
       students={students ?? []}
       studentInfos={studentInfos ?? []}
+      noShowMap={noShowMap}
     />
   );
 }

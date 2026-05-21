@@ -10,7 +10,6 @@ export async function cancelSession(sessionId: string, reason: string) {
   const authed = await requireRole('coach');
   const supabase = await createClient();
 
-  // Get session info for notifications
   const { data: session } = await supabase
     .from('sessions')
     .select('id, coach_id, class_type_id, start_at')
@@ -29,7 +28,6 @@ export async function cancelSession(sessionId: string, reason: string) {
     .eq('id', session.class_type_id)
     .maybeSingle();
 
-  // Cancel via RPC, get affected students back
   const { data: result, error: cancelErr } = await supabase.rpc('cancel_session', {
     p_session_id: sessionId,
     p_reason: reason,
@@ -37,14 +35,14 @@ export async function cancelSession(sessionId: string, reason: string) {
 
   if (cancelErr) return { ok: false, error: cancelErr.message };
 
-  const affected = Array.isArray(result) && result.length > 0
-    ? (result[0] as { affected_student_ids: string[] }).affected_student_ids ?? []
-    : [];
+  const affected =
+    Array.isArray(result) && result.length > 0
+      ? (result[0] as { affected_student_ids: string[] }).affected_student_ids ?? []
+      : [];
 
   const startStr = formatDateTime12(session.start_at);
   const className = ct?.name ?? 'session';
 
-  // Notify each affected student via email AND sms (forced — this is important)
   for (const studentId of affected) {
     await notifyStudent(supabase, {
       studentId,
@@ -58,7 +56,6 @@ export async function cancelSession(sessionId: string, reason: string) {
     });
   }
 
-  // GroupMe broadcast
   await notifyGroupMe(supabase, {
     coachId: session.coach_id,
     text:
@@ -80,6 +77,19 @@ export async function markNoShow(bookingId: string) {
   if (error) return { ok: false, error: error.message };
 
   revalidatePath('/coach/schedule');
+  revalidatePath('/coach/students');
+  return { ok: true };
+}
+
+export async function unmarkNoShow(bookingId: string) {
+  await requireRole('coach');
+  const supabase = await createClient();
+
+  const { error } = await supabase.rpc('unmark_no_show', { p_booking_id: bookingId });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/coach/schedule');
+  revalidatePath('/coach/students');
   return { ok: true };
 }
 

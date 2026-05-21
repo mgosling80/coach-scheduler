@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useTransition } from 'react';
-import { cancelSession, markNoShow, markSessionCompleted } from './actions';
+import { cancelSession, markNoShow, unmarkNoShow, markSessionCompleted } from './actions';
 import { formatDateTime12, formatTime12 } from '@/lib/format';
 import {
   ChevronDown,
@@ -450,6 +450,16 @@ function SessionDetails({
     });
   }
 
+  function handleUndoNoShow(bookingId: string) {
+    if (!confirm('Undo no-show?')) return;
+    setError(null);
+    setInfo(null);
+    startTransition(async () => {
+      const result = await unmarkNoShow(bookingId);
+      if (!result.ok) setError(result.error ?? 'Failed.');
+    });
+  }
+
   function handleComplete() {
     if (!confirm('Mark this session as completed?')) return;
     setError(null);
@@ -514,8 +524,17 @@ function SessionDetails({
                   <span className="font-medium">{b.student_name}</span>
                   <span className="text-xs text-gray-500 ml-2">{b.student_email}</span>
                   {b.status === 'no_show' && (
-                    <span className="ml-2 text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">
-                      No-show
+                    <span className="ml-2 inline-flex items-center gap-1">
+                      <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">
+                        No-show
+                      </span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleUndoNoShow(b.booking_id); }}
+                        disabled={pending}
+                        className="text-xs text-gray-500 hover:text-gray-700 disabled:opacity-50"
+                      >
+                        Undo
+                      </button>
                     </span>
                   )}
                   {b.status === 'completed' && (

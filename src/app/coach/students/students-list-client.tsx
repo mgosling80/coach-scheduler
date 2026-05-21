@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { approveStudent, declineStudent } from './actions';
-import { ChevronDown, ChevronRight, Check, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Check, X, UserX } from 'lucide-react';
 
 type Approval = {
   id: string;
@@ -14,16 +14,25 @@ type Approval = {
   decline_reason: string | null;
 };
 type Student = { id: string; full_name: string; email: string; phone: string | null };
-type StudentInfo = { user_id: string; age: number | null; gym: string | null; level: string | null; team: string | null; comments: string | null };
+type StudentInfo = {
+  user_id: string;
+  age: number | null;
+  gym: string | null;
+  level: string | null;
+  team: string | null;
+  comments: string | null;
+};
 
 export function StudentsListClient({
   approvals,
   students,
   studentInfos,
+  noShowMap,
 }: {
   approvals: Approval[];
   students: Student[];
   studentInfos: StudentInfo[];
+  noShowMap: Record<string, number>;
 }) {
   const studentMap = new Map(students.map((s) => [s.id, s]));
   const infoMap = new Map(studentInfos.map((i) => [i.user_id, i]));
@@ -34,6 +43,9 @@ export function StudentsListClient({
     declined: approvals.filter((a) => a.status === 'declined'),
     expired: approvals.filter((a) => a.status === 'expired'),
   };
+
+  // For Approved, sort by no-show count desc so problem students surface
+  groups.approved.sort((a, b) => (noShowMap[b.student_id] ?? 0) - (noShowMap[a.student_id] ?? 0));
 
   return (
     <div className="space-y-4">
@@ -54,6 +66,7 @@ export function StudentsListClient({
                   approval={a}
                   student={studentMap.get(a.student_id)}
                   info={infoMap.get(a.student_id) ?? null}
+                  noShowCount={noShowMap[a.student_id] ?? 0}
                 />
               ))}
             </ul>
@@ -68,10 +81,12 @@ function ApprovalRow({
   approval,
   student,
   info,
+  noShowCount,
 }: {
   approval: Approval;
   student: Student | undefined;
   info: StudentInfo | null;
+  noShowCount: number;
 }) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -97,6 +112,22 @@ function ApprovalRow({
 
   if (!student) return null;
 
+  const noShowBadge = noShowCount > 0 && (
+    <span
+      className={`text-xs px-2 py-0.5 rounded font-medium inline-flex items-center gap-1 ${
+        noShowCount >= 3
+          ? 'bg-red-100 text-red-800'
+          : noShowCount === 2
+          ? 'bg-orange-100 text-orange-800'
+          : 'bg-yellow-100 text-yellow-800'
+      }`}
+      title={`${noShowCount} no-show${noShowCount === 1 ? '' : 's'}`}
+    >
+      <UserX className="w-3 h-3" />
+      {noShowCount}
+    </span>
+  );
+
   return (
     <li>
       <button
@@ -104,9 +135,16 @@ function ApprovalRow({
         className="w-full flex items-center justify-between p-4 hover:bg-gray-50 text-left"
       >
         <div className="flex items-center gap-2 min-w-0">
-          {open ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+          {open ? (
+            <ChevronDown className="w-4 h-4 text-gray-400" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-gray-400" />
+          )}
           <div className="min-w-0">
-            <div className="font-medium text-gray-900">{student.full_name}</div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-medium text-gray-900">{student.full_name}</span>
+              {noShowBadge}
+            </div>
             <div className="text-xs text-gray-500">{student.email}</div>
           </div>
         </div>
@@ -128,6 +166,7 @@ function ApprovalRow({
             <Detail label="Gym" value={info?.gym} />
             <Detail label="Level" value={info?.level} />
             <Detail label="Team" value={info?.team} />
+            <Detail label="No-shows" value={noShowCount > 0 ? String(noShowCount) : '—'} />
           </div>
           {info?.comments && (
             <div className="text-sm">
