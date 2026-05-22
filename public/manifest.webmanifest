@@ -1,6 +1,6 @@
 {
-  "name": "Coach Scheduler",
-  "short_name": "Coach Scheduler",
+  "name": "CheerPro",
+  "short_name": "CheerPro",
   "description": "Schedule private coaching sessions",
   "start_url": "/dashboard",
   "display": "standalone",
