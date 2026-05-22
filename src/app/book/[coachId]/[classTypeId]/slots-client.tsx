@@ -56,7 +56,7 @@ export function SlotsClient({
               })}
             </h3>
           </div>
-          <div className="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          <div className="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
             {byDate.get(date)!.map((slot) => (
               <SlotButton
                 key={slot.start}
@@ -126,7 +126,7 @@ function SlotButton({
       <button
         onClick={handleClick}
         disabled={pending || slot.studentIsBooked || slot.studentIsWaitlisted}
-        className={`w-full px-3 py-2 border rounded-md text-sm font-medium transition ${buttonClass} disabled:opacity-70`}
+        className={`w-full px-3 py-3 border rounded-md text-sm font-medium transition active:scale-[0.98] ${buttonClass} disabled:opacity-70`}
         title={slot.isFull ? 'Full — booking adds you to the waitlist' : ''}
       >
         {timeStr}

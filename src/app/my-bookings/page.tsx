@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { MyBookingsClient } from './my-bookings-client';
+import { StudentMobileNav } from '@/components/student-mobile-nav';
 
 export default async function MyBookingsPage() {
   const authed = await requireAuth();
@@ -122,7 +123,7 @@ export default async function MyBookingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
             Coach Scheduler
@@ -135,7 +136,7 @@ export default async function MyBookingsPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-gray-900">My bookings</h2>
           <Link href="/request-recurring" className="text-sm text-blue-600 hover:text-blue-700">
@@ -148,6 +149,7 @@ export default async function MyBookingsPage() {
           recurring={recurringItems}
         />
       </main>
+      <StudentMobileNav />
     </div>
   );
 }

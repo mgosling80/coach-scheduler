@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
+import { StudentMobileNav } from '@/components/student-mobile-nav';
 
 export default async function BookIndexPage() {
   const authed = await requireAuth();
@@ -37,7 +38,7 @@ export default async function BookIndexPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
             Coach Scheduler
@@ -50,7 +51,7 @@ export default async function BookIndexPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Book a session</h2>
 
         {!coaches || coaches.length === 0 ? (
@@ -82,6 +83,7 @@ export default async function BookIndexPage() {
           </ul>
         )}
       </main>
+      <StudentMobileNav />
     </div>
   );
 }

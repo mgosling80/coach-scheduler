@@ -155,7 +155,9 @@ function BookingSection({
         </h3>
       </div>
       {items.length === 0 ? (
-        <div className="p-6 text-center text-sm text-gray-500">None.</div>
+        <div className="p-6 text-center text-sm text-gray-500">
+          {title === 'Upcoming' ? 'No upcoming sessions. Tap Book to schedule one.' : 'None.'}
+        </div>
       ) : (
         <ul className="divide-y divide-gray-200">
           {items.map((i) => (
