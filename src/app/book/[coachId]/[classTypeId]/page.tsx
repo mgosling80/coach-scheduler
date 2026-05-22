@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getBookableSlots } from '@/lib/booking';
 import { ArrowLeft } from 'lucide-react';
 import { SlotsClient } from './slots-client';
+import { Wordmark } from '@/components/wordmark';
 
 export default async function SlotsPage({
   params,
@@ -76,14 +77,15 @@ export default async function SlotsPage({
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+    <div className="min-h-screen bg-[var(--cream)]">
+      <header
+        className="sticky top-0 z-30"
+        style={{ background: 'linear-gradient(135deg, #2e5bd4 0%, #3d6ae8 55%, #5b8cf5 100%)' }}
+      >
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
-            Coach Scheduler
-          </Link>
+          <Wordmark variant="light" />
           <form action="/auth/signout" method="post">
-            <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">
+            <button type="submit" className="text-sm font-semibold text-white/80 hover:text-white">
               Sign out
             </button>
           </form>
@@ -91,11 +93,11 @@ export default async function SlotsPage({
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <Link href={`/book/${coachId}`} className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4">
+        <Link href={`/book/${coachId}`} className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--navy-900)] mb-4">
           <ArrowLeft className="w-4 h-4" /> Back
         </Link>
-        <h2 className="text-xl font-semibold text-gray-900 mb-1">{classType.name}</h2>
-        <p className="text-sm text-gray-600 mb-6">
+        <h2 className="text-2xl font-extrabold font-display text-[var(--navy-900)] mb-1">{classType.name}</h2>
+        <p className="text-sm text-[var(--muted)] mb-6">
           {classType.duration_minutes} min · {classType.capacity === 1 ? '1:1' : `Group of ${classType.capacity}`}
         </p>
 

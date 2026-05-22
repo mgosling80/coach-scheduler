@@ -37,7 +37,7 @@ export function SlotsClient({
 
   if (dates.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-8 text-center text-sm text-gray-500">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center text-sm text-[var(--muted)]">
         No bookable slots in the next 4 weeks. Check back later or contact your coach.
       </div>
     );
@@ -46,9 +46,9 @@ export function SlotsClient({
   return (
     <div className="space-y-4">
       {dates.map((date) => (
-        <div key={date} className="bg-white rounded-lg shadow">
-          <div className="p-3 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900">
+        <div key={date} className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="p-3 border-b border-gray-100">
+            <h3 className="text-sm font-bold font-display text-[var(--navy-900)]">
               {new Date(date + 'T12:00:00').toLocaleDateString('en-US', {
                 weekday: 'long',
                 month: 'long',
@@ -108,17 +108,17 @@ function SlotButton({
 
   const timeStr = formatTime12(new Date(slot.start).toTimeString().slice(0, 5));
 
-  let buttonClass = 'border-gray-300 bg-white hover:bg-blue-50 text-gray-900';
+  let buttonClass = 'border-gray-300 bg-white hover:border-[var(--blue-500)] hover:bg-[rgba(46,91,212,.06)] text-[var(--navy-900)]';
   let badge: React.ReactNode = null;
 
   if (slot.studentIsBooked) {
-    buttonClass = 'border-green-500 bg-green-50 text-green-900';
+    buttonClass = 'border-[var(--blue-600)] text-white';
     badge = <Check className="w-3 h-3 inline ml-1" />;
   } else if (slot.studentIsWaitlisted) {
-    buttonClass = 'border-yellow-400 bg-yellow-50 text-yellow-900';
+    buttonClass = 'border-[var(--gold-500)] text-[var(--navy-900)]';
     badge = <Clock className="w-3 h-3 inline ml-1" />;
   } else if (slot.isFull) {
-    buttonClass = 'border-gray-300 bg-gray-50 text-gray-500';
+    buttonClass = 'border-gray-200 bg-[#f3f1ec] text-[var(--muted)]';
   }
 
   return (
@@ -126,7 +126,8 @@ function SlotButton({
       <button
         onClick={handleClick}
         disabled={pending || slot.studentIsBooked || slot.studentIsWaitlisted}
-        className={`w-full px-3 py-3 border rounded-md text-sm font-medium transition active:scale-[0.98] ${buttonClass} disabled:opacity-70`}
+        style={slot.studentIsBooked ? { background: 'var(--blue-600)' } : undefined}
+        className={`w-full px-3 py-3 border rounded-lg text-sm font-semibold transition active:scale-[0.98] ${buttonClass} disabled:opacity-70`}
         title={slot.isFull ? 'Full — booking adds you to the waitlist' : ''}
       >
         {timeStr}
