@@ -62,7 +62,7 @@ export function ClassTypeForm({
             defaultValue={initial.name}
             required
             placeholder="e.g. Hitting"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
 
@@ -73,7 +73,7 @@ export function ClassTypeForm({
             defaultValue={initial.description}
             rows={2}
             placeholder="Optional — shown to students when picking a class type."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
 
@@ -82,7 +82,7 @@ export function ClassTypeForm({
           <select
             name="duration_minutes"
             defaultValue={initial.duration_minutes}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           >
             <option value="30">30 minutes</option>
             <option value="60">60 minutes</option>
@@ -97,7 +97,7 @@ export function ClassTypeForm({
             min="1"
             max="50"
             defaultValue={initial.capacity}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
           <p className="mt-1 text-xs text-gray-500">1 for one-on-one, 2+ for group classes.</p>
         </div>
@@ -137,7 +137,7 @@ export function ClassTypeForm({
             min="0"
             defaultValue={initial.booking_window_hours}
             placeholder="Use default"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
           <p className="mt-1 text-xs text-gray-500">Leave blank to use your default.</p>
         </div>
@@ -152,7 +152,7 @@ export function ClassTypeForm({
             min="0"
             defaultValue={initial.cancel_window_hours}
             placeholder="Use default"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
           <p className="mt-1 text-xs text-gray-500">Leave blank to use your default.</p>
         </div>
@@ -165,7 +165,7 @@ export function ClassTypeForm({
           <button
             type="submit"
             disabled={pending}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
           >
             {pending ? 'Saving...' : 'Save'}
           </button>

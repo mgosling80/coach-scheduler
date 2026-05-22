@@ -67,22 +67,24 @@ export function ScheduleClient({
       <div className="flex items-center gap-2">
         <button
           onClick={() => setView('list')}
-          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium border ${
+          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-semibold border transition ${
             view === 'list'
-              ? 'bg-blue-600 text-white border-blue-600'
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              ? 'text-white border-transparent'
+              : 'bg-white text-[var(--muted)] border-gray-200 hover:bg-gray-50'
           }`}
+          style={view === 'list' ? { background: 'var(--blue-600)' } : undefined}
         >
           <List className="w-4 h-4" />
           List
         </button>
         <button
           onClick={() => setView('calendar')}
-          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium border ${
+          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-semibold border transition ${
             view === 'calendar'
-              ? 'bg-blue-600 text-white border-blue-600'
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              ? 'text-white border-transparent'
+              : 'bg-white text-[var(--muted)] border-gray-200 hover:bg-gray-50'
           }`}
+          style={view === 'calendar' ? { background: 'var(--blue-600)' } : undefined}
         >
           <CalendarIcon className="w-4 h-4" />
           Calendar
@@ -137,16 +139,16 @@ function SessionsSection({
   mode: 'upcoming' | 'past' | 'cancelled';
 }) {
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="p-4 border-b border-gray-100">
+        <h2 className="text-sm font-bold font-display text-[var(--navy-900)] uppercase tracking-wide">
           {title} ({sessions.length})
         </h2>
       </div>
       {sessions.length === 0 ? (
-        <div className="p-6 text-center text-sm text-gray-500">None.</div>
+        <div className="p-6 text-center text-sm text-[var(--muted)]">None.</div>
       ) : (
-        <ul className="divide-y divide-gray-200">
+        <ul className="divide-y divide-gray-100">
           {sessions.map((s) => (
             <SessionRow key={s.id} session={s} classTypeMap={classTypeMap} mode={mode} />
           ))}
@@ -216,9 +218,9 @@ function MonthView({
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">{monthLabel}</h2>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h2 className="text-lg font-bold font-display text-[var(--navy-900)]">{monthLabel}</h2>
           <div className="flex items-center gap-1">
             <button
               onClick={prevMonth}
@@ -229,7 +231,7 @@ function MonthView({
             </button>
             <button
               onClick={goToToday}
-              className="text-sm text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50"
+              className="text-sm font-semibold text-[var(--navy-900)] px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50"
             >
               Today
             </button>
@@ -244,9 +246,9 @@ function MonthView({
         </div>
 
         {/* Day-of-week header */}
-        <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
+        <div className="grid grid-cols-7 border-b border-gray-100" style={{ background: 'rgba(46,91,212,.04)' }}>
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-            <div key={d} className="px-2 py-2 text-xs font-semibold text-gray-600 text-center">
+            <div key={d} className="px-2 py-2 text-xs font-bold text-[var(--navy-700)] text-center">
               {d}
             </div>
           ))}
@@ -267,17 +269,18 @@ function MonthView({
                 key={idx}
                 onClick={() => setSelectedDate(dateKey)}
                 className={`text-left border-b border-r border-gray-200 p-2 min-h-[110px] sm:min-h-[130px] transition relative overflow-hidden ${
-                  isSelected ? 'bg-blue-50' : isCurrentMonth ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'
+                  isSelected ? '' : isCurrentMonth ? 'bg-white hover:bg-gray-50' : 'bg-[#f3f1ec] hover:bg-gray-100'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span
+                    style={isToday ? { background: 'var(--blue-600)' } : undefined}
                     className={`text-sm ${
                       !isCurrentMonth
                         ? 'text-gray-400'
                         : isToday
-                        ? 'inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-semibold'
-                        : 'text-gray-900 font-medium'
+                        ? 'inline-flex items-center justify-center w-6 h-6 rounded-full text-white font-bold'
+                        : 'text-[var(--navy-900)] font-semibold'
                     }`}
                   >
                     {d.getDate()}
@@ -321,9 +324,9 @@ function MonthView({
       </div>
 
       {/* Selected day session list */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-900">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="p-4 border-b border-gray-100">
+          <h3 className="text-sm font-bold font-display text-[var(--navy-900)]">
             {new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-US', {
               weekday: 'long',
               month: 'long',
@@ -331,16 +334,16 @@ function MonthView({
               year: 'numeric',
             })}
           </h3>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-[var(--muted)] mt-0.5">
             {selectedSessions.length === 0
               ? 'No sessions'
               : `${selectedSessions.length} session${selectedSessions.length === 1 ? '' : 's'}`}
           </p>
         </div>
         {selectedSessions.length === 0 ? (
-          <div className="p-6 text-center text-sm text-gray-500">Nothing scheduled.</div>
+          <div className="p-6 text-center text-sm text-[var(--muted)]">Nothing scheduled.</div>
         ) : (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-gray-100">
             {selectedSessions.map((s) => {
               const isPast = s.startAt < now;
               const mode: 'upcoming' | 'past' | 'cancelled' = s.cancelled
@@ -388,8 +391,8 @@ function SessionRow({
             style={{ backgroundColor: ct?.color ?? '#3b82f6' }}
           />
           <div className="min-w-0">
-            <div className="font-medium text-gray-900">{ct?.name ?? 'Class'}</div>
-            <div className="text-xs text-gray-500">{formatDateTime12(session.startAt)}</div>
+            <div className="font-bold font-display text-[var(--navy-900)]">{ct?.name ?? 'Class'}</div>
+            <div className="text-xs text-[var(--muted)]">{formatDateTime12(session.startAt)}</div>
           </div>
         </div>
         <div className="text-xs text-gray-500">
@@ -510,7 +513,7 @@ function SessionDetails({
       </div>
 
       <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">Bookings ({activeBookings.length})</h4>
+        <h4 className="text-sm font-bold font-display text-[var(--navy-700)] mb-2">Bookings ({activeBookings.length})</h4>
         {activeBookings.length === 0 ? (
           <p className="text-xs text-gray-400">No bookings.</p>
         ) : (
@@ -561,7 +564,7 @@ function SessionDetails({
 
       {cancelledBookings.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-gray-500 mb-2">
+          <h4 className="text-sm font-bold font-display text-[var(--muted)] mb-2">
             Cancelled ({cancelledBookings.length})
           </h4>
           <ul className="space-y-1">
@@ -579,7 +582,7 @@ function SessionDetails({
 
       {session.waitlist.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Waitlist ({session.waitlist.length})</h4>
+          <h4 className="text-sm font-bold font-display text-[var(--navy-700)] mb-2">Waitlist ({session.waitlist.length})</h4>
           <ul className="space-y-1">
             {session.waitlist.map((w) => (
               <li
@@ -589,7 +592,7 @@ function SessionDetails({
                 <span className="text-xs text-gray-500">#{w.wait_position}</span>{' '}
                 <span className="font-medium">{w.student_name}</span>
                 {w.promoted_at && (
-                  <span className="ml-2 text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">
+                  <span className="ml-2 text-xs px-2 py-0.5 rounded font-semibold" style={{ background: 'rgba(240,180,41,.18)', color: 'var(--gold-600)' }}>
                     Offered
                   </span>
                 )}
@@ -622,7 +625,7 @@ function SessionDetails({
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
               placeholder="e.g. Coach illness, weather, facility unavailable"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
             <div className="flex gap-2">
               <button

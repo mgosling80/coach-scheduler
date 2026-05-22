@@ -45,7 +45,7 @@ export function AvailabilityClient({
 
   if (classTypes.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Availability</h2>
         <p className="text-sm text-gray-600">
           Create at least one active class type first, then come back here to set when you&apos;re available.
@@ -62,17 +62,17 @@ export function AvailabilityClient({
   const classTypeMap = new Map(classTypes.map((ct) => [ct.id, ct]));
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="p-6 border-b border-gray-100 flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Availability</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <h2 className="text-xl font-extrabold font-display text-[var(--navy-900)]">Availability</h2>
+          <p className="text-sm text-[var(--muted)] mt-1">
             Recurring weekly time windows. Students can only book within these.
           </p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+          className="inline-flex items-center gap-2 cp-btn-primary px-3 py-2 rounded-lg text-sm font-semibold"
         >
           <Plus className="w-4 h-4" />
           Add block
@@ -81,10 +81,10 @@ export function AvailabilityClient({
 
       {showForm && <NewBlockForm classTypes={classTypes} onDone={() => setShowForm(false)} />}
 
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-gray-100">
         {blocksByDay.map((day) => (
           <div key={day.value} className="p-4">
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">{day.label}</h3>
+            <h3 className="text-sm font-bold font-display text-[var(--navy-700)] mb-2">{day.label}</h3>
             {day.blocks.length === 0 ? (
               <p className="text-xs text-gray-400">No availability.</p>
             ) : (
@@ -132,7 +132,7 @@ function BlockRow({ block, classType }: { block: Block; classType: ClassType | u
           />
         )}
         <div className="text-sm min-w-0">
-          <span className="font-medium text-gray-900">
+          <span className="font-semibold text-[var(--navy-900)]">
             {formatTime12(block.start_time)} – {formatTime12(block.end_time)}
           </span>
           <span className="text-gray-500"> · {classType?.name ?? 'Unknown class type'}</span>
@@ -179,14 +179,14 @@ function NewBlockForm({
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form action={handleSubmit} className="p-6 bg-gray-50 border-b border-gray-200 space-y-4">
+    <form action={handleSubmit} className="p-6 border-b border-gray-100 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Class type</label>
           <select
             name="class_type_id"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           >
             <option value="">Select...</option>
             {classTypes.map((ct) => (
@@ -202,7 +202,7 @@ function NewBlockForm({
           <select
             name="day_of_week"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           >
             <option value="mon">Monday</option>
             <option value="tue">Tuesday</option>
@@ -221,7 +221,7 @@ function NewBlockForm({
             name="start_time"
             required
             defaultValue="16:00"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
 
@@ -232,7 +232,7 @@ function NewBlockForm({
             name="end_time"
             required
             defaultValue="19:00"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
 
@@ -243,7 +243,7 @@ function NewBlockForm({
             name="effective_from"
             required
             defaultValue={today}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
 
@@ -254,7 +254,7 @@ function NewBlockForm({
           <input
             type="date"
             name="effective_until"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
       </div>
@@ -265,7 +265,7 @@ function NewBlockForm({
         <button
           type="submit"
           disabled={pending}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
         >
           {pending ? 'Saving...' : 'Save'}
         </button>

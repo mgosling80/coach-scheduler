@@ -24,17 +24,17 @@ export function StudentsClient({
   const coachMap = new Map(coaches.map((c) => [c.id, c]));
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900">All students</h2>
-        <p className="text-sm text-gray-600 mt-1">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="p-6 border-b border-gray-100">
+        <h2 className="text-xl font-extrabold font-display text-[var(--navy-900)]">All students</h2>
+        <p className="text-sm text-[var(--muted)] mt-1">
           Assign students to coaches. Coaches then approve or decline them.
         </p>
       </div>
       {students.length === 0 ? (
-        <div className="p-10 text-center text-sm text-gray-500">No students yet.</div>
+        <div className="p-10 text-center text-sm text-[var(--muted)]">No students yet.</div>
       ) : (
-        <ul className="divide-y divide-gray-200">
+        <ul className="divide-y divide-gray-100">
           {students.map((s) => (
             <StudentRow
               key={s.id}
@@ -100,7 +100,7 @@ function StudentRow({
         <div className="flex items-center gap-2 min-w-0">
           {open ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
           <div className="min-w-0">
-            <div className="font-medium text-gray-900">{student.full_name}</div>
+            <div className="font-semibold text-[var(--navy-900)]">{student.full_name}</div>
             <div className="text-xs text-gray-500">{student.email}</div>
           </div>
         </div>
@@ -126,7 +126,7 @@ function StudentRow({
           )}
 
           <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Coach assignments</h4>
+            <h4 className="text-sm font-bold font-display text-[var(--navy-700)] mb-2">Coach assignments</h4>
             {approvals.length === 0 ? (
               <p className="text-xs text-gray-400 mb-2">No coaches assigned.</p>
             ) : (
@@ -174,7 +174,7 @@ function StudentRow({
                 <button
                   onClick={handleAssign}
                   disabled={!selectedCoach || pending}
-                  className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                  className="cp-btn-primary px-3 py-1.5 rounded-lg text-sm font-semibold disabled:opacity-50"
                 >
                   Assign
                 </button>

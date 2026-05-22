@@ -19,10 +19,10 @@ export default async function CoachProfilePage() {
     .maybeSingle();
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900">My profile</h2>
-        <p className="text-sm text-gray-600 mt-1">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="p-6 border-b border-gray-100">
+        <h2 className="text-xl font-extrabold font-display text-[var(--navy-900)]">My profile</h2>
+        <p className="text-sm text-[var(--muted)] mt-1">
           Public bio plus the defaults that apply to your class types and notifications.
         </p>
       </div>

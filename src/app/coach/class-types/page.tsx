@@ -15,17 +15,17 @@ export default async function ClassTypesPage() {
     .order('name');
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="p-6 border-b border-gray-100 flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Class types</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <h2 className="text-xl font-extrabold font-display text-[var(--navy-900)]">Class types</h2>
+          <p className="text-sm text-[var(--muted)] mt-1">
             The categories students choose when booking (e.g. Hitting, Pitching, Fielding).
           </p>
         </div>
         <Link
           href="/coach/class-types/new"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+          className="inline-flex items-center gap-2 cp-btn-primary px-3 py-2 rounded-lg text-sm font-semibold"
         >
           <Plus className="w-4 h-4" />
           New class type
@@ -33,11 +33,11 @@ export default async function ClassTypesPage() {
       </div>
 
       {!classTypes || classTypes.length === 0 ? (
-        <div className="p-10 text-center text-sm text-gray-500">
+        <div className="p-10 text-center text-sm text-[var(--muted)]">
           No class types yet. Create one to start setting availability.
         </div>
       ) : (
-        <ul className="divide-y divide-gray-200">
+        <ul className="divide-y divide-gray-100">
           {classTypes.map((ct) => (
             <li key={ct.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
               <div className="flex items-center gap-3">
@@ -47,7 +47,7 @@ export default async function ClassTypesPage() {
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900">{ct.name}</span>
+                    <span className="font-semibold text-[var(--navy-900)]">{ct.name}</span>
                     {!ct.is_active && (
                       <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
                         Inactive
@@ -62,7 +62,7 @@ export default async function ClassTypesPage() {
               </div>
               <Link
                 href={`/coach/class-types/${ct.id}`}
-                className="text-sm text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
+                className="text-sm font-semibold text-[var(--blue-600)] hover:underline inline-flex items-center gap-1"
               >
                 <Pencil className="w-3 h-3" />
                 Edit

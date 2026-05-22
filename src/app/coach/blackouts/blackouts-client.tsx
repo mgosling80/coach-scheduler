@@ -25,17 +25,17 @@ export function BlackoutsClient({ blackouts }: { blackouts: Blackout[] }) {
   const [showForm, setShowForm] = useState(false);
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="p-6 border-b border-gray-100 flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Blackouts</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <h2 className="text-xl font-extrabold font-display text-[var(--navy-900)]">Blackouts</h2>
+          <p className="text-sm text-[var(--muted)] mt-1">
             Time off and dates you&apos;re unavailable. Overrides your recurring availability.
           </p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+          className="inline-flex items-center gap-2 cp-btn-primary px-3 py-2 rounded-lg text-sm font-semibold"
         >
           <Plus className="w-4 h-4" />
           Add blackout
@@ -45,9 +45,9 @@ export function BlackoutsClient({ blackouts }: { blackouts: Blackout[] }) {
       {showForm && <NewBlackoutForm onDone={() => setShowForm(false)} />}
 
       {blackouts.length === 0 ? (
-        <div className="p-10 text-center text-sm text-gray-500">No upcoming blackouts.</div>
+        <div className="p-10 text-center text-sm text-[var(--muted)]">No upcoming blackouts.</div>
       ) : (
-        <ul className="divide-y divide-gray-200">
+        <ul className="divide-y divide-gray-100">
           {blackouts.map((b) => (
             <BlackoutRow key={b.id} blackout={b} />
           ))}
@@ -73,7 +73,7 @@ function BlackoutRow({ blackout }: { blackout: Blackout }) {
   return (
     <li className="flex items-center justify-between p-4 hover:bg-gray-50">
       <div className="text-sm min-w-0">
-        <div className="font-medium text-gray-900">
+        <div className="font-semibold text-[var(--navy-900)]">
           {formatDateTime(blackout.start_at)} — {formatDateTime(blackout.end_at)}
         </div>
         {blackout.reason && <div className="text-gray-500 mt-0.5">{blackout.reason}</div>}
@@ -110,7 +110,7 @@ function NewBlackoutForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <form action={handleSubmit} className="p-6 bg-gray-50 border-b border-gray-200 space-y-4">
+    <form action={handleSubmit} className="p-6 border-b border-gray-100 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Start</label>
@@ -118,7 +118,7 @@ function NewBlackoutForm({ onDone }: { onDone: () => void }) {
             type="datetime-local"
             name="start_at"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
         <div>
@@ -127,7 +127,7 @@ function NewBlackoutForm({ onDone }: { onDone: () => void }) {
             type="datetime-local"
             name="end_at"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
         <div className="md:col-span-2">
@@ -138,7 +138,7 @@ function NewBlackoutForm({ onDone }: { onDone: () => void }) {
             type="text"
             name="reason"
             placeholder="e.g. Vacation, conference"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
           />
         </div>
       </div>
@@ -149,7 +149,7 @@ function NewBlackoutForm({ onDone }: { onDone: () => void }) {
         <button
           type="submit"
           disabled={pending}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
         >
           {pending ? 'Saving...' : 'Save'}
         </button>

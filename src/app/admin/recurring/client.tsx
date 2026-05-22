@@ -64,16 +64,16 @@ export function RecurringAdminClient({
   return (
     <div className="space-y-4">
       {(['pending', 'approved', 'declined'] as const).map((group) => (
-        <div key={group} className="bg-white rounded-lg shadow">
-          <div className="p-4 border-b border-gray-200">
-            <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+        <div key={group} className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="p-4 border-b border-gray-100">
+            <h2 className="text-sm font-bold font-display text-[var(--navy-900)] uppercase tracking-wide">
               {group} ({groups[group].length})
             </h2>
           </div>
           {groups[group].length === 0 ? (
-            <div className="p-6 text-center text-sm text-gray-500">None.</div>
+            <div className="p-6 text-center text-sm text-[var(--muted)]">None.</div>
           ) : (
-            <ul className="divide-y divide-gray-200">
+            <ul className="divide-y divide-gray-100">
               {groups[group].map((r) => (
                 <RequestRow
                   key={r.id}
@@ -170,7 +170,7 @@ function RequestRow({
             />
           )}
           <div className="min-w-0">
-            <div className="font-medium text-gray-900">{student.full_name}</div>
+            <div className="font-semibold text-[var(--navy-900)]">{student.full_name}</div>
             <div className="text-xs text-gray-500">
               {classType?.name ?? 'Class'} with {coach?.full_name ?? 'Coach'} ·{' '}
               {DAY_LABELS[request.day_of_week]} at {formatTime12(request.start_time)} · {request.horizon_weeks} wks
