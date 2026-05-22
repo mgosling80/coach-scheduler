@@ -40,18 +40,18 @@ export function AccountClient({ currentEmail }: { currentEmail: string }) {
   return (
     <div className="p-6 space-y-8">
       <section>
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Change email</h3>
+        <h3 className="text-sm font-bold font-display text-[var(--navy-900)] uppercase tracking-wide mb-3">Change email</h3>
         <form action={handleEmail} className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Current email</label>
-            <input type="email" value={currentEmail} disabled className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-100 text-gray-500" />
+            <label className="block text-sm font-semibold text-[var(--navy-900)] mb-1">Current email</label>
+            <input type="email" value={currentEmail} disabled className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-[var(--muted)]" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New email</label>
-            <input type="email" name="new_email" required className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+            <label className="block text-sm font-semibold text-[var(--navy-900)] mb-1">New email</label>
+            <input type="email" name="new_email" required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]" />
           </div>
           <div className="flex items-center gap-3">
-            <button type="submit" disabled={pending} className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+            <button type="submit" disabled={pending} className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">
               {pending ? 'Sending...' : 'Send change link'}
             </button>
             {emailMsg && (
@@ -64,15 +64,15 @@ export function AccountClient({ currentEmail }: { currentEmail: string }) {
       </section>
 
       <section>
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Change password</h3>
+        <h3 className="text-sm font-bold font-display text-[var(--navy-900)] uppercase tracking-wide mb-3">Change password</h3>
         <form action={handlePassword} className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New password</label>
-            <input type="password" name="new_password" required minLength={8} className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
-            <p className="mt-1 text-xs text-gray-500">Minimum 8 characters.</p>
+            <label className="block text-sm font-semibold text-[var(--navy-900)] mb-1">New password</label>
+            <input type="password" name="new_password" required minLength={8} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]" />
+            <p className="mt-1 text-xs text-[var(--muted)]">Minimum 8 characters.</p>
           </div>
           <div className="flex items-center gap-3">
-            <button type="submit" disabled={pending} className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+            <button type="submit" disabled={pending} className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">
               {pending ? 'Saving...' : 'Update password'}
             </button>
             {pwMsg && (
@@ -84,8 +84,8 @@ export function AccountClient({ currentEmail }: { currentEmail: string }) {
         </form>
       </section>
 
-      <section className="pt-6 border-t border-gray-200">
-        <h3 className="text-sm font-semibold text-red-700 uppercase tracking-wide mb-3">Danger zone</h3>
+      <section className="pt-6 border-t border-gray-100">
+        <h3 className="text-sm font-bold font-display text-red-700 uppercase tracking-wide mb-3">Danger zone</h3>
         <button
           onClick={handleDelete}
           disabled={pending}
@@ -93,7 +93,7 @@ export function AccountClient({ currentEmail }: { currentEmail: string }) {
         >
           Delete my account
         </button>
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-[var(--muted)]">
           Your past bookings remain on coaches&apos; records, but your name and email are removed.
         </p>
         {deleteMsg && <div className="mt-2 text-sm text-red-700">{deleteMsg}</div>}

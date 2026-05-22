@@ -64,21 +64,21 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
           name="phone"
           defaultValue={initial.phone}
           placeholder="2148836464 or (214) 883-6464"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
         />
-        <p className="mt-1 text-xs text-gray-500">US numbers only. Any format works. Used once SMS is enabled.</p>
+        <p className="mt-1 text-xs text-[var(--muted)]">US numbers only. Any format works. Used once SMS is enabled.</p>
       </section>
 
       <section>
         <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Reminders</h3>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Reminder hours before session</label>
+        <label className="block text-sm font-semibold text-[var(--navy-900)] mb-1">Reminder hours before session</label>
         <input
           name="reminder_hours"
           defaultValue={initial.reminder_hours}
           placeholder="24, 2"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
         />
-        <p className="mt-1 text-xs text-gray-500">Comma-separated, e.g. 24, 2 = one day before and two hours before.</p>
+        <p className="mt-1 text-xs text-[var(--muted)]">Comma-separated, e.g. 24, 2 = one day before and two hours before.</p>
       </section>
 
       <section>
@@ -94,12 +94,12 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
             Send morning summary of today&apos;s sessions
           </label>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Digest time</label>
+            <label className="block text-sm font-semibold text-[var(--navy-900)] mb-1">Digest time</label>
             <input
               type="time"
               name="day_of_digest_time"
               defaultValue={initial.day_of_digest_time}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
             />
           </div>
         </div>
@@ -109,7 +109,7 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
         <button
           type="submit"
           disabled={pending}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
         >
           {pending ? 'Saving...' : 'Save preferences'}
         </button>

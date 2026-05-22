@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Wordmark } from '@/components/wordmark';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { PreferencesForm } from './preferences-form';
@@ -20,14 +21,15 @@ export default async function PreferencesPage() {
     .maybeSingle();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+    <div className="min-h-screen bg-[var(--cream)]">
+      <header
+        className="sticky top-0 z-30"
+        style={{ background: 'linear-gradient(135deg, #2e5bd4 0%, #3d6ae8 55%, #5b8cf5 100%)' }}
+      >
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
-            Coach Scheduler
-          </Link>
+          <Wordmark variant="light" />
           <form action="/auth/signout" method="post">
-            <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">
+            <button type="submit" className="text-sm font-semibold text-white/80 hover:text-white">
               Sign out
             </button>
           </form>
@@ -35,10 +37,10 @@ export default async function PreferencesPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Notification preferences</h2>
-            <p className="text-sm text-gray-600 mt-1">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="p-6 border-b border-gray-100">
+            <h2 className="text-xl font-extrabold font-display text-[var(--navy-900)]">Notification preferences</h2>
+            <p className="text-sm text-[var(--muted)] mt-1">
               Choose how and when we contact you.
             </p>
           </div>
