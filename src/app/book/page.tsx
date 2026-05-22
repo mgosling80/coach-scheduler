@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { StudentMobileNav } from '@/components/student-mobile-nav';
+import { Wordmark } from '@/components/wordmark';
 
 export default async function BookIndexPage() {
   const authed = await requireAuth();
@@ -37,14 +38,15 @@ export default async function BookIndexPage() {
   const bioMap = new Map((coachProfiles ?? []).map((c) => [c.user_id, c.bio]));
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+    <div className="min-h-screen bg-[var(--cream)]">
+      <header
+        className="sticky top-0 z-30"
+        style={{ background: 'linear-gradient(135deg, #2e5bd4 0%, #3d6ae8 55%, #5b8cf5 100%)' }}
+      >
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
-            Coach Scheduler
-          </Link>
+          <Wordmark variant="light" />
           <form action="/auth/signout" method="post">
-            <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">
+            <button type="submit" className="text-sm font-semibold text-white/80 hover:text-white">
               Sign out
             </button>
           </form>
@@ -52,7 +54,7 @@ export default async function BookIndexPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Book a session</h2>
+        <h2 className="text-2xl font-extrabold font-display text-[var(--navy-900)] mb-4">Book a session</h2>
 
         {!coaches || coaches.length === 0 ? (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-900">
@@ -61,9 +63,9 @@ export default async function BookIndexPage() {
         ) : (
           <ul className="space-y-3">
             {coaches.map((c) => (
-              <li key={c.id} className="bg-white rounded-lg shadow hover:shadow-md transition">
+              <li key={c.id} className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition">
                 <Link href={`/book/${c.id}`} className="flex items-center gap-4 p-4">
-                  <div className="w-16 h-16 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0" style={{ background: 'rgba(46,91,212,.08)' }}>
                     {photoMap.get(c.id) ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={photoMap.get(c.id) ?? ''} alt={c.full_name} className="w-full h-full object-cover" />
@@ -72,7 +74,7 @@ export default async function BookIndexPage() {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-gray-900">{c.full_name}</div>
+                    <div className="font-bold font-display text-[var(--navy-900)]">{c.full_name}</div>
                     {bioMap.get(c.id) && (
                       <div className="text-sm text-gray-600 mt-1 line-clamp-2">{bioMap.get(c.id)}</div>
                     )}

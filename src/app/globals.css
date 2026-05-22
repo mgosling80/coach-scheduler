@@ -1,19 +1,77 @@
 @import "tailwindcss";
 
+/* ============================================================
+   CheerPro theme tokens
+   Navy primary, gold accent, warm neutrals.
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Brand */
+  --navy-900: #16213e;
+  --navy-800: #1b2a52;
+  --navy-700: #22356a;
+  --navy-600: #2a4185;
+  --blue-600: #2e5bd4;
+  --blue-500: #3d6ae8;
+  --blue-400: #5b8cf5;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --gold-500: #f0b429;
+  --gold-400: #f5c451;
+  --gold-600: #d99a13;
+
+  /* Warm neutrals */
+  --cream: #faf8f4;
+  --paper: #ffffff;
+  --ink: #1d2438;
+  --muted: #6b7280;
+
+  --background: var(--cream);
+  --foreground: var(--ink);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 }
+
+/* Display font for headings */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+}
+
+/* Reusable brand utilities (Tailwind v4 @utility) */
+@utility cp-gradient {
+  background: linear-gradient(135deg, #2e5bd4 0%, #3d6ae8 55%, #5b8cf5 100%);
+}
+
+@utility cp-btn-primary {
+  background: var(--blue-600);
+  color: #fff;
+  transition: background-color .15s ease, transform .1s ease;
+}
+
+@utility cp-btn-gold {
+  background: var(--gold-500);
+  color: var(--navy-900);
+  font-weight: 600;
+  transition: background-color .15s ease, transform .1s ease;
+}
+
+@utility cp-ring {
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(240,180,41,.45);
+  }
+}
+
+@utility cp-sparkle {
+  background-image:
+    radial-gradient(circle at 18% 25%, rgba(255,255,255,.10) 0, transparent 35%),
+    radial-gradient(circle at 82% 75%, rgba(240,180,41,.10) 0, transparent 38%);
+}
+
+/* Hover/active states for brand buttons */
+.cp-btn-primary:hover { background: var(--navy-700); }
+.cp-btn-primary:active { transform: scale(.985); }
+.cp-btn-gold:hover { background: var(--gold-400); }
+.cp-btn-gold:active { transform: scale(.985); }

@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { MyBookingsClient } from './my-bookings-client';
 import { StudentMobileNav } from '@/components/student-mobile-nav';
+import { Wordmark } from '@/components/wordmark';
 
 export default async function MyBookingsPage() {
   const authed = await requireAuth();
@@ -122,14 +123,15 @@ export default async function MyBookingsPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+    <div className="min-h-screen bg-[var(--cream)]">
+      <header
+        className="sticky top-0 z-30"
+        style={{ background: 'linear-gradient(135deg, #2e5bd4 0%, #3d6ae8 55%, #5b8cf5 100%)' }}
+      >
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
-            Coach Scheduler
-          </Link>
+          <Wordmark variant="light" />
           <form action="/auth/signout" method="post">
-            <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">
+            <button type="submit" className="text-sm font-semibold text-white/80 hover:text-white">
               Sign out
             </button>
           </form>
@@ -138,8 +140,8 @@ export default async function MyBookingsPage() {
 
       <main className="max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">My bookings</h2>
-          <Link href="/request-recurring" className="text-sm text-blue-600 hover:text-blue-700">
+          <h2 className="text-2xl font-extrabold font-display text-[var(--navy-900)]">My bookings</h2>
+          <Link href="/request-recurring" className="text-sm font-semibold text-[var(--blue-600)] hover:underline">
             Request recurring →
           </Link>
         </div>

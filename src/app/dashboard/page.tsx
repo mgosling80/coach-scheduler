@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { ArrowRight, Calendar, Users, Shield, Bell, Settings } from 'lucide-react';
+import { Wordmark } from '@/components/wordmark';
 
 export default async function DashboardPage() {
   const authed = await requireAuth();
@@ -27,13 +28,21 @@ export default async function DashboardPage() {
     needsOnboarding = !studentProfile;
   }
 
+  const firstName = (profile?.full_name ?? authed.user.email ?? '').split(' ')[0];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-[var(--cream)]">
+      <header
+        className="sticky top-0 z-30"
+        style={{ background: 'linear-gradient(135deg, #2e5bd4 0%, #3d6ae8 55%, #5b8cf5 100%)' }}
+      >
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-lg font-semibold text-gray-900">Coach Scheduler</h1>
+          <Wordmark variant="light" />
           <form action="/auth/signout" method="post">
-            <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">
+            <button
+              type="submit"
+              className="text-sm font-semibold text-white/80 hover:text-white"
+            >
               Sign out
             </button>
           </form>
@@ -41,28 +50,39 @@ export default async function DashboardPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-4">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Welcome, {profile?.full_name ?? authed.user.email}
-          </h2>
-          <p className="text-sm text-gray-600">
-            Roles: {authed.roles.length > 0 ? authed.roles.join(', ') : 'none assigned yet'}
-          </p>
+        {/* Welcome hero */}
+        <div
+          className="rounded-2xl p-6 md:p-8 text-white shadow-sm relative overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #22356a 0%, #2e5bd4 70%, #3d6ae8 100%)' }}
+        >
+          <div className="relative z-10">
+            <h2 className="text-2xl md:text-3xl font-extrabold font-display">
+              Welcome{firstName ? `, ${firstName}` : ''}!
+            </h2>
+            <p className="text-sm text-white/75 mt-1 capitalize">
+              {authed.roles.length > 0 ? authed.roles.join(' · ') : 'No roles assigned yet'}
+            </p>
+          </div>
+          <div
+            className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full opacity-40"
+            style={{ background: 'radial-gradient(circle, var(--gold-500), transparent 70%)' }}
+          />
         </div>
 
         {needsOnboarding && (
           <Link
             href="/onboarding"
-            className="block bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition"
+            className="block rounded-xl p-4 transition border"
+            style={{ background: 'rgba(240,180,41,.12)', borderColor: 'rgba(240,180,41,.4)' }}
           >
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-medium text-blue-900">Finish your profile</div>
-                <div className="text-sm text-blue-800 mt-1">
+                <div className="font-bold text-[var(--navy-900)]">Finish your profile</div>
+                <div className="text-sm text-[var(--navy-700)] mt-1">
                   Tell us a bit about yourself so coaches can review your account.
                 </div>
               </div>
-              <ArrowRight className="w-5 h-5 text-blue-600" />
+              <ArrowRight className="w-5 h-5 text-[var(--gold-600)]" />
             </div>
           </Link>
         )}
@@ -123,16 +143,24 @@ function DashCard({
   description: string;
 }) {
   return (
-    <Link href={href} className="block bg-white rounded-lg shadow p-6 hover:bg-gray-50 transition group">
+    <Link
+      href={href}
+      className="block bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-gray-200 transition group"
+    >
       <div className="flex items-center justify-between">
-        <div className="flex items-start gap-3">
-          <Icon className="w-5 h-5 text-gray-700 mt-0.5" />
+        <div className="flex items-start gap-4">
+          <span
+            className="inline-flex items-center justify-center w-11 h-11 rounded-xl flex-shrink-0"
+            style={{ background: 'rgba(46,91,212,.1)' }}
+          >
+            <Icon className="w-5 h-5 text-[var(--blue-600)]" />
+          </span>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-600 mt-1">{description}</p>
+            <h3 className="text-lg font-bold font-display text-[var(--navy-900)]">{title}</h3>
+            <p className="text-sm text-[var(--muted)] mt-0.5">{description}</p>
           </div>
         </div>
-        <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700" />
+        <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-[var(--blue-600)] transition" />
       </div>
     </Link>
   );

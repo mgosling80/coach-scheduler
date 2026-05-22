@@ -1,14 +1,29 @@
 import type { Metadata, Viewport } from 'next';
+import { Poppins, Nunito_Sans } from 'next/font/google';
 import './globals.css';
 
+const display = Poppins({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
+const body = Nunito_Sans({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-body',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'Coach Scheduler',
-  description: 'Schedule private coaching sessions',
+  title: 'CheerPro',
+  description: 'Private lesson scheduling for competitive cheer',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Coach Scheduler',
+    title: 'CheerPro',
   },
   icons: {
     icon: '/icon-192.png',
@@ -17,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#2563eb',
+  themeColor: '#16213e',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -25,9 +40,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );
 }
-// deploy test Thu May 21 19:32:11 CDT 2026

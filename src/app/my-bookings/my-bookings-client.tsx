@@ -52,6 +52,10 @@ const DAY_LABELS: Record<string, string> = {
   sun: 'Sundays',
 };
 
+const cardClass = 'bg-white rounded-xl shadow-sm border border-gray-100';
+const sectionHeadClass =
+  'text-sm font-bold font-display text-[var(--navy-900)] uppercase tracking-wide';
+
 export function MyBookingsClient({
   bookings,
   waitlist,
@@ -85,13 +89,11 @@ export function MyBookingsClient({
 
 function RecurringSection({ items }: { items: RecurringItem[] }) {
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-          Recurring requests
-        </h3>
+    <div className={cardClass}>
+      <div className="p-4 border-b border-gray-100">
+        <h3 className={sectionHeadClass}>Recurring requests</h3>
       </div>
-      <ul className="divide-y divide-gray-200">
+      <ul className="divide-y divide-gray-100">
         {items.map((r) => (
           <RecurringRow key={r.id} item={r} />
         ))}
@@ -112,23 +114,23 @@ function RecurringRow({ item }: { item: RecurringItem }) {
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <div className="font-medium text-gray-900">{item.classTypeName}</div>
+          <div className="font-bold font-display text-[var(--navy-900)]">{item.classTypeName}</div>
           {isPending && (
-            <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">
+            <span className="text-xs px-2 py-0.5 rounded font-semibold" style={{ background: 'rgba(240,180,41,.18)', color: 'var(--gold-600)' }}>
               Pending review
             </span>
           )}
           {isDeclined && (
-            <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">Declined</span>
+            <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded font-semibold">Declined</span>
           )}
         </div>
-        <div className="text-sm text-gray-600">with {item.coachName}</div>
-        <div className="text-sm text-gray-500 mt-0.5">
+        <div className="text-sm text-[var(--muted)]">with {item.coachName}</div>
+        <div className="text-sm text-[var(--muted)] mt-0.5">
           {DAY_LABELS[item.dayOfWeek] ?? item.dayOfWeek} at {formatTime12(item.startTime)} ·{' '}
           {item.horizonWeeks} weeks
         </div>
         {isDeclined && item.declineReason && (
-          <div className="text-xs text-gray-600 mt-1">Reason: {item.declineReason}</div>
+          <div className="text-xs text-[var(--muted)] mt-1">Reason: {item.declineReason}</div>
         )}
         <div className="text-xs text-gray-400 mt-1">
           Requested {new Date(item.requestedAt).toLocaleDateString()}
@@ -148,18 +150,18 @@ function BookingSection({
   cancellable: boolean;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+    <div className={cardClass}>
+      <div className="p-4 border-b border-gray-100">
+        <h3 className={sectionHeadClass}>
           {title} ({items.length})
         </h3>
       </div>
       {items.length === 0 ? (
-        <div className="p-6 text-center text-sm text-gray-500">
+        <div className="p-6 text-center text-sm text-[var(--muted)]">
           {title === 'Upcoming' ? 'No upcoming sessions. Tap Book to schedule one.' : 'None.'}
         </div>
       ) : (
-        <ul className="divide-y divide-gray-200">
+        <ul className="divide-y divide-gray-100">
           {items.map((i) => (
             <BookingRow key={i.bookingId} item={i} cancellable={cancellable} />
           ))}
@@ -190,9 +192,9 @@ function BookingRow({ item, cancellable }: { item: BookingItem; cancellable: boo
           style={{ backgroundColor: item.classTypeColor }}
         />
         <div className="min-w-0">
-          <div className="font-medium text-gray-900">{item.classTypeName}</div>
-          <div className="text-sm text-gray-600">with {item.coachName}</div>
-          <div className="text-sm text-gray-500 mt-0.5">{formatDateTime12(item.startAt)}</div>
+          <div className="font-bold font-display text-[var(--navy-900)]">{item.classTypeName}</div>
+          <div className="text-sm text-[var(--muted)]">with {item.coachName}</div>
+          <div className="text-sm text-[var(--muted)] mt-0.5">{formatDateTime12(item.startAt)}</div>
           {error && <div className="text-xs text-red-600 mt-1">{error}</div>}
         </div>
       </div>
@@ -200,7 +202,7 @@ function BookingRow({ item, cancellable }: { item: BookingItem; cancellable: boo
         <button
           onClick={handleCancel}
           disabled={pending}
-          className="text-sm text-red-600 hover:text-red-700 disabled:opacity-50 flex-shrink-0"
+          className="text-sm font-semibold text-red-600 hover:text-red-700 disabled:opacity-50 flex-shrink-0"
         >
           Cancel
         </button>
@@ -211,16 +213,19 @@ function BookingRow({ item, cancellable }: { item: BookingItem; cancellable: boo
 
 function OffersSection({ items }: { items: WaitlistItem[] }) {
   return (
-    <div className="bg-green-50 border border-green-200 rounded-lg shadow">
-      <div className="p-4 border-b border-green-200">
-        <h3 className="text-sm font-semibold text-green-900 uppercase tracking-wide">
+    <div
+      className="rounded-xl shadow-sm border"
+      style={{ background: 'rgba(240,180,41,.10)', borderColor: 'rgba(240,180,41,.45)' }}
+    >
+      <div className="p-4 border-b" style={{ borderColor: 'rgba(240,180,41,.35)' }}>
+        <h3 className="text-sm font-bold font-display uppercase tracking-wide text-[var(--gold-600)]">
           Spots available — accept now
         </h3>
-        <p className="text-xs text-green-800 mt-1">
+        <p className="text-xs mt-1 text-[var(--navy-700)]">
           A spot opened from your waitlist. Accept before the offer expires.
         </p>
       </div>
-      <ul className="divide-y divide-green-200">
+      <ul className="divide-y" style={{ borderColor: 'rgba(240,180,41,.25)' }}>
         {items.map((i) => (
           <OfferRow key={i.waitlistId} item={i} />
         ))}
@@ -254,11 +259,11 @@ function OfferRow({ item }: { item: WaitlistItem }) {
           style={{ backgroundColor: item.classTypeColor }}
         />
         <div className="min-w-0">
-          <div className="font-medium text-gray-900">{item.classTypeName}</div>
-          <div className="text-sm text-gray-600">with {item.coachName}</div>
-          <div className="text-sm text-gray-500 mt-0.5">{formatDateTime12(item.startAt)}</div>
+          <div className="font-bold font-display text-[var(--navy-900)]">{item.classTypeName}</div>
+          <div className="text-sm text-[var(--muted)]">with {item.coachName}</div>
+          <div className="text-sm text-[var(--muted)] mt-0.5">{formatDateTime12(item.startAt)}</div>
           {minutesLeft !== null && (
-            <div className="text-xs text-green-700 mt-1">{minutesLeft} min left to accept</div>
+            <div className="text-xs font-semibold mt-1 text-[var(--gold-600)]">{minutesLeft} min left to accept</div>
           )}
           {error && <div className="text-xs text-red-600 mt-1">{error}</div>}
         </div>
@@ -266,7 +271,7 @@ function OfferRow({ item }: { item: WaitlistItem }) {
       <button
         onClick={handleAccept}
         disabled={pending}
-        className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex-shrink-0"
+        className="cp-btn-gold px-4 py-2 rounded-lg text-sm disabled:opacity-50 flex-shrink-0"
       >
         {pending ? 'Accepting...' : 'Accept'}
       </button>
@@ -276,14 +281,12 @@ function OfferRow({ item }: { item: WaitlistItem }) {
 
 function WaitlistSection({ items }: { items: WaitlistItem[] }) {
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-          On waitlist ({items.length})
-        </h3>
-        <p className="text-xs text-gray-500 mt-1">You&apos;ll be notified if a spot opens.</p>
+    <div className={cardClass}>
+      <div className="p-4 border-b border-gray-100">
+        <h3 className={sectionHeadClass}>On waitlist ({items.length})</h3>
+        <p className="text-xs text-[var(--muted)] mt-1">You&apos;ll be notified if a spot opens.</p>
       </div>
-      <ul className="divide-y divide-gray-200">
+      <ul className="divide-y divide-gray-100">
         {items.map((i) => (
           <WaitlistRow key={i.waitlistId} item={i} />
         ))}
@@ -313,21 +316,21 @@ function WaitlistRow({ item }: { item: WaitlistItem }) {
           style={{ backgroundColor: item.classTypeColor }}
         />
         <div className="min-w-0">
-          <div className="font-medium text-gray-900">
+          <div className="font-bold font-display text-[var(--navy-900)]">
             {item.classTypeName}
-            <span className="ml-2 text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">
+            <span className="ml-2 text-xs px-2 py-0.5 rounded font-semibold align-middle" style={{ background: 'rgba(46,91,212,.1)', color: 'var(--blue-600)' }}>
               Position #{item.position}
             </span>
           </div>
-          <div className="text-sm text-gray-600">with {item.coachName}</div>
-          <div className="text-sm text-gray-500 mt-0.5">{formatDateTime12(item.startAt)}</div>
+          <div className="text-sm text-[var(--muted)]">with {item.coachName}</div>
+          <div className="text-sm text-[var(--muted)] mt-0.5">{formatDateTime12(item.startAt)}</div>
           {error && <div className="text-xs text-red-600 mt-1">{error}</div>}
         </div>
       </div>
       <button
         onClick={handleLeave}
         disabled={pending}
-        className="text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50 flex-shrink-0"
+        className="text-sm font-semibold text-[var(--muted)] hover:text-[var(--navy-900)] disabled:opacity-50 flex-shrink-0"
       >
         Leave
       </button>
