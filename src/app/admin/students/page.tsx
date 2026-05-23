@@ -17,7 +17,7 @@ export default async function AdminStudentsPage() {
   const { data: students } = studentIds.length
     ? await supabase
         .from('profiles')
-        .select('id, full_name, email, phone')
+        .select('id, full_name, email, phone, photo_url')
         .in('id', studentIds)
         .order('full_name')
     : { data: [] };

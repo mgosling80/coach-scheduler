@@ -3,8 +3,9 @@
 import { useState, useTransition } from 'react';
 import { assignStudentToCoach, removeAssignment } from './actions';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
+import { Avatar } from '@/components/avatar';
 
-type Student = { id: string; full_name: string; email: string; phone: string | null };
+type Student = { id: string; full_name: string; email: string; phone: string | null; photo_url: string | null };
 type StudentInfo = { user_id: string; age: number | null; gym: string | null; level: string | null; team: string | null; comments: string | null };
 type Coach = { id: string; full_name: string; email: string };
 type Approval = { id: string; student_id: string; coach_id: string; status: string; expires_at: string | null };
@@ -99,6 +100,7 @@ function StudentRow({
       >
         <div className="flex items-center gap-2 min-w-0">
           {open ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+          <Avatar name={student.full_name} photoUrl={student.photo_url} size={36} />
           <div className="min-w-0">
             <div className="font-semibold text-[var(--navy-900)]">{student.full_name}</div>
             <div className="text-xs text-gray-500">{student.email}</div>

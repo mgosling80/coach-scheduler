@@ -16,7 +16,7 @@ export default async function CoachStudentsPage() {
   const { data: students } = studentIds.length
     ? await supabase
         .from('profiles')
-        .select('id, full_name, email, phone')
+        .select('id, full_name, email, phone, photo_url')
         .in('id', studentIds)
     : { data: [] };
 

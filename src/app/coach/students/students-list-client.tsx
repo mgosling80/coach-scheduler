@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { approveStudent, declineStudent } from './actions';
 import { ChevronDown, ChevronRight, Check, X, UserX } from 'lucide-react';
+import { Avatar } from '@/components/avatar';
 
 type Approval = {
   id: string;
@@ -13,7 +14,7 @@ type Approval = {
   expires_at: string | null;
   decline_reason: string | null;
 };
-type Student = { id: string; full_name: string; email: string; phone: string | null };
+type Student = { id: string; full_name: string; email: string; phone: string | null; photo_url: string | null };
 type StudentInfo = {
   user_id: string;
   age: number | null;
@@ -140,6 +141,7 @@ function ApprovalRow({
           ) : (
             <ChevronRight className="w-4 h-4 text-gray-400" />
           )}
+          <Avatar name={student.full_name} photoUrl={student.photo_url} size={36} />
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-[var(--navy-900)]">{student.full_name}</span>

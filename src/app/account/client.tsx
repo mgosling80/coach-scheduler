@@ -44,15 +44,6 @@ export function AccountClient({ currentEmail, photoUrl }: { currentEmail: string
         <ProfilePhotoUpload initialUrl={photoUrl} />
       </section>
 
-      <section className="flex items-center justify-between rounded-lg border border-gray-100 bg-[#f6f4ef] px-4 py-3">
-        <span className="text-sm text-[var(--muted)]">Signed in as {currentEmail}</span>
-        <form action="/auth/signout" method="post">
-          <button type="submit" className="text-sm font-semibold text-[var(--blue-600)] hover:underline">
-            Sign out
-          </button>
-        </form>
-      </section>
-
       <section>
         <h3 className="text-sm font-bold font-display text-[var(--navy-900)] uppercase tracking-wide mb-3">Change email</h3>
         <form action={handleEmail} className="space-y-3">
@@ -95,6 +86,15 @@ export function AccountClient({ currentEmail, photoUrl }: { currentEmail: string
               </span>
             )}
           </div>
+        </form>
+      </section>
+
+      <section className="pt-6 border-t border-gray-100 flex items-center justify-between">
+        <span className="text-sm text-[var(--muted)]">Signed in as {currentEmail}</span>
+        <form action="/auth/signout" method="post">
+          <button type="submit" className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold">
+            Sign out
+          </button>
         </form>
       </section>
 
