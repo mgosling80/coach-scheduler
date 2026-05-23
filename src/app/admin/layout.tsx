@@ -1,6 +1,7 @@
 import { requireRole } from '@/lib/auth';
 import { Wordmark } from '@/components/wordmark';
 import { SidebarNav } from '@/components/sidebar-nav';
+import { HeaderAvatar } from '@/components/header-avatar';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const authed = await requireRole('admin');
@@ -24,14 +25,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               ADMIN
             </span>
           </div>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="text-white/75 hidden sm:inline">{authed.user.email}</span>
-            <form action="/auth/signout" method="post">
-              <button type="submit" className="font-semibold text-white/80 hover:text-white">
-                Sign out
-              </button>
-            </form>
-          </div>
+          <HeaderAvatar />
         </div>
       </header>
 

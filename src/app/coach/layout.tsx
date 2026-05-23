@@ -1,6 +1,7 @@
 import { requireRole } from '@/lib/auth';
 import { Wordmark } from '@/components/wordmark';
 import { SidebarNav } from '@/components/sidebar-nav';
+import { HeaderAvatar } from '@/components/header-avatar';
 
 export default async function CoachLayout({ children }: { children: React.ReactNode }) {
   const authed = await requireRole('coach');
@@ -22,15 +23,13 @@ export default async function CoachLayout({ children }: { children: React.ReactN
         style={{ background: 'linear-gradient(135deg, #2e5bd4 0%, #3d6ae8 55%, #5b8cf5 100%)' }}
       >
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Wordmark variant="light" />
-          <div className="flex items-center gap-4 text-sm">
-            <span className="text-white/75 hidden sm:inline">{authed.user.email}</span>
-            <form action="/auth/signout" method="post">
-              <button type="submit" className="font-semibold text-white/80 hover:text-white">
-                Sign out
-              </button>
-            </form>
+          <div className="flex items-center gap-2">
+            <Wordmark variant="light" />
+            <span className="text-xs font-semibold text-white/60 border border-white/30 rounded px-1.5 py-0.5">
+              COACH
+            </span>
           </div>
+          <HeaderAvatar />
         </div>
       </header>
 

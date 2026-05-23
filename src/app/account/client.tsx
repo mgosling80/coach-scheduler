@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import { changeEmail, changePassword, deleteAccount } from './actions';
+import { ProfilePhotoUpload } from '@/components/profile-photo-upload';
 
-export function AccountClient({ currentEmail }: { currentEmail: string }) {
+export function AccountClient({ currentEmail, photoUrl }: { currentEmail: string; photoUrl: string }) {
   const [pending, startTransition] = useTransition();
   const [emailMsg, setEmailMsg] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
   const [pwMsg, setPwMsg] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
@@ -39,6 +40,19 @@ export function AccountClient({ currentEmail }: { currentEmail: string }) {
 
   return (
     <div className="p-6 space-y-8">
+      <section>
+        <ProfilePhotoUpload initialUrl={photoUrl} />
+      </section>
+
+      <section className="flex items-center justify-between rounded-lg border border-gray-100 bg-[#f6f4ef] px-4 py-3">
+        <span className="text-sm text-[var(--muted)]">Signed in as {currentEmail}</span>
+        <form action="/auth/signout" method="post">
+          <button type="submit" className="text-sm font-semibold text-[var(--blue-600)] hover:underline">
+            Sign out
+          </button>
+        </form>
+      </section>
+
       <section>
         <h3 className="text-sm font-bold font-display text-[var(--navy-900)] uppercase tracking-wide mb-3">Change email</h3>
         <form action={handleEmail} className="space-y-3">

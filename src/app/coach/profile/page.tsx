@@ -8,7 +8,7 @@ export default async function CoachProfilePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, email, phone')
+    .select('full_name, email, phone, photo_url')
     .eq('id', authed.user.id)
     .single();
 
@@ -32,7 +32,7 @@ export default async function CoachProfilePage() {
           email: profile?.email ?? '',
           phone: profile?.phone ?? '',
           bio: coach?.bio ?? '',
-          photo_url: coach?.photo_url ?? '',
+          photo_url: profile?.photo_url ?? '',
           groupme_bot_id: coach?.groupme_bot_id ?? '',
           default_booking_window_hours: coach?.default_booking_window_hours ?? 24,
           default_cancel_window_hours: coach?.default_cancel_window_hours ?? 6,

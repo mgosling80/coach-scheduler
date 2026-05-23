@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { ArrowRight, Calendar, Users, Shield, Bell, Settings } from 'lucide-react';
 import { Wordmark } from '@/components/wordmark';
+import { HeaderAvatar } from '@/components/header-avatar';
 
 export default async function DashboardPage() {
   const authed = await requireAuth();
@@ -38,14 +39,7 @@ export default async function DashboardPage() {
       >
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Wordmark variant="light" />
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="text-sm font-semibold text-white/80 hover:text-white"
-            >
-              Sign out
-            </button>
-          </form>
+          <HeaderAvatar />
         </div>
       </header>
 

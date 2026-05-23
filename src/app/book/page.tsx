@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { StudentMobileNav } from '@/components/student-mobile-nav';
 import { Wordmark } from '@/components/wordmark';
+import { HeaderAvatar } from '@/components/header-avatar';
 
 export default async function BookIndexPage() {
   const authed = await requireAuth();
@@ -45,11 +46,7 @@ export default async function BookIndexPage() {
       >
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Wordmark variant="light" />
-          <form action="/auth/signout" method="post">
-            <button type="submit" className="text-sm font-semibold text-white/80 hover:text-white">
-              Sign out
-            </button>
-          </form>
+          <HeaderAvatar />
         </div>
       </header>
 

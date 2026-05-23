@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { saveStudentProfile } from './actions';
+import { ProfilePhotoUpload } from '@/components/profile-photo-upload';
 
 type Initial = {
   phone: string;
@@ -12,7 +13,7 @@ type Initial = {
   comments: string;
 };
 
-export function OnboardingForm({ fullName, initial }: { fullName: string; initial: Initial }) {
+export function OnboardingForm({ fullName, photoUrl, initial }: { fullName: string; photoUrl: string; initial: Initial }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +27,8 @@ export function OnboardingForm({ fullName, initial }: { fullName: string; initia
 
   return (
     <form action={handleSubmit} className="p-6 space-y-4">
+      <ProfilePhotoUpload initialUrl={photoUrl} />
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
         <input
@@ -98,7 +101,7 @@ export function OnboardingForm({ fullName, initial }: { fullName: string; initia
       <button
         type="submit"
         disabled={pending}
-        className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+        className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
       >
         {pending ? 'Saving...' : 'Save and continue'}
       </button>

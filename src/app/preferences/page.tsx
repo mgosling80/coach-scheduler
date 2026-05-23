@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Wordmark } from '@/components/wordmark';
+import { HeaderAvatar } from '@/components/header-avatar';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { PreferencesForm } from './preferences-form';
@@ -28,11 +29,7 @@ export default async function PreferencesPage() {
       >
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <Wordmark variant="light" />
-          <form action="/auth/signout" method="post">
-            <button type="submit" className="text-sm font-semibold text-white/80 hover:text-white">
-              Sign out
-            </button>
-          </form>
+          <HeaderAvatar />
         </div>
       </header>
 

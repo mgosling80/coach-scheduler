@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { updateCoachProfile } from './actions';
-import { PhotoUpload } from './photo-upload';
+import { ProfilePhotoUpload } from '@/components/profile-photo-upload';
 
 type Initial = {
   full_name: string;
@@ -38,7 +38,7 @@ export function ProfileForm({ initial }: { initial: Initial }) {
     <div className="p-6 space-y-6">
       <section>
         <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Photo</h3>
-        <PhotoUpload initialUrl={initial.photo_url} />
+        <ProfilePhotoUpload initialUrl={initial.photo_url} />
       </section>
 
       <form action={handleSubmit} className="space-y-6">
