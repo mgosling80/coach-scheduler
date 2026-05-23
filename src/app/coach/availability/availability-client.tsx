@@ -1,8 +1,12 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
-import { createAvailabilityBlock, deleteAvailabilityBlock } from './actions';
+import { Plus, Trash2, Megaphone } from 'lucide-react';
+import {
+  createAvailabilityBlock,
+  deleteAvailabilityBlock,
+  publishAvailability,
+} from './actions';
 import { formatTime12 } from '@/lib/format';
 
 type ClassType = {
@@ -37,17 +41,21 @@ const DAYS: { value: Day; label: string }[] = [
 export function AvailabilityClient({
   classTypes,
   blocks,
+  hasGroupMe,
+  lastPublishedAt,
 }: {
   classTypes: ClassType[];
   blocks: Block[];
+  hasGroupMe: boolean;
+  lastPublishedAt: string | null;
 }) {
   const [showForm, setShowForm] = useState(false);
 
   if (classTypes.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Availability</h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="text-xl font-extrabold font-display text-[var(--navy-900)] mb-2">Availability</h2>
+        <p className="text-sm text-[var(--muted)]">
           Create at least one active class type first, then come back here to set when you&apos;re available.
         </p>
       </div>
@@ -81,6 +89,8 @@ export function AvailabilityClient({
 
       {showForm && <NewBlockForm classTypes={classTypes} onDone={() => setShowForm(false)} />}
 
+      <PublishBar hasGroupMe={hasGroupMe} lastPublishedAt={lastPublishedAt} />
+
       <div className="divide-y divide-gray-100">
         {blocksByDay.map((day) => (
           <div key={day.value} className="p-4">
@@ -101,6 +111,114 @@ export function AvailabilityClient({
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function PublishBar({
+  hasGroupMe,
+  lastPublishedAt,
+}: {
+  hasGroupMe: boolean;
+  lastPublishedAt: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState(
+    'New lesson availability is up! Head to the app to book your spots.'
+  );
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [published, setPublished] = useState<string | null>(lastPublishedAt);
+
+  function handlePublish() {
+    setError(null);
+    startTransition(async () => {
+      const result = await publishAvailability(message);
+      if (!result.ok) {
+        setError(result.error ?? 'Failed.');
+      } else {
+        setPublished((result as { publishedAt?: string }).publishedAt ?? new Date().toISOString());
+        setOpen(false);
+      }
+    });
+  }
+
+  function lastPublishedLabel(iso: string): string {
+    const diffMin = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    if (diffMin < 1) return 'just now';
+    if (diffMin < 60) return `${diffMin} min ago`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return `${diffHr} hr ago`;
+    return new Date(iso).toLocaleDateString();
+  }
+
+  return (
+    <div className="px-6 py-4 border-b border-gray-100" style={{ background: 'rgba(240,180,41,.07)' }}>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="min-w-0">
+          <h3 className="text-sm font-bold font-display text-[var(--navy-900)] flex items-center gap-2">
+            <Megaphone className="w-4 h-4 text-[var(--gold-600)]" />
+            Publish &amp; notify
+          </h3>
+          <p className="text-xs text-[var(--muted)] mt-1">
+            Done editing? Send a GroupMe announcement so families know new times are open.
+          </p>
+          {published && (
+            <p className="text-xs text-[var(--muted)] mt-1">
+              Last published {lastPublishedLabel(published)}.
+            </p>
+          )}
+        </div>
+        {!open && (
+          <button
+            onClick={() => setOpen(true)}
+            disabled={!hasGroupMe}
+            className="cp-btn-gold px-4 py-2 rounded-lg text-sm disabled:opacity-50 inline-flex items-center gap-2 flex-shrink-0"
+            title={hasGroupMe ? '' : 'Add a GroupMe bot ID in your profile first'}
+          >
+            <Megaphone className="w-4 h-4" />
+            Publish &amp; notify
+          </button>
+        )}
+      </div>
+
+      {!hasGroupMe && (
+        <p className="text-xs text-red-600 mt-2">
+          Add a GroupMe bot ID in your profile to enable announcements.
+        </p>
+      )}
+
+      {open && (
+        <div className="mt-3 space-y-2 bg-white rounded-lg border border-gray-200 p-3">
+          <label className="block text-sm font-semibold text-[var(--navy-900)]">Announcement message</label>
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={3}
+            maxLength={500}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gold-500)]"
+          />
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-[var(--muted)]">{message.length}/500</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setOpen(false)}
+                className="text-sm text-[var(--muted)] hover:text-[var(--navy-900)] px-3 py-1.5"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePublish}
+                disabled={pending}
+                className="cp-btn-gold px-4 py-1.5 rounded-lg text-sm disabled:opacity-50"
+              >
+                {pending ? 'Publishing...' : 'Send to GroupMe'}
+              </button>
+            </div>
+          </div>
+          {error && <p className="text-xs text-red-600">{error}</p>}
+        </div>
+      )}
     </div>
   );
 }

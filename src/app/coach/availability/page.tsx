@@ -21,5 +21,18 @@ export default async function AvailabilityPage() {
     .order('day_of_week')
     .order('start_time');
 
-  return <AvailabilityClient classTypes={classTypes ?? []} blocks={blocks ?? []} />;
+  const { data: coach } = await supabase
+    .from('coach_profiles')
+    .select('groupme_bot_id, availability_last_published_at')
+    .eq('user_id', authed.user.id)
+    .maybeSingle();
+
+  return (
+    <AvailabilityClient
+      classTypes={classTypes ?? []}
+      blocks={blocks ?? []}
+      hasGroupMe={!!coach?.groupme_bot_id}
+      lastPublishedAt={coach?.availability_last_published_at ?? null}
+    />
+  );
 }

@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const FROM = process.env.NOTIFY_FROM_EMAIL || 'Coach Scheduler <onboarding@resend.dev>';
+const FROM = process.env.NOTIFY_FROM_EMAIL || 'CheerPro <onboarding@resend.dev>';
 
 let resendClient: Resend | null = null;
 function client() {

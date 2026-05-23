@@ -37,7 +37,7 @@ export default async function RecurringRequestPage() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
-            Coach Scheduler
+            CheerPro
           </Link>
           <form action="/auth/signout" method="post">
             <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">

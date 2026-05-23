@@ -71,3 +71,46 @@ export async function deleteAvailabilityBlock(id: string) {
   revalidatePath('/coach/availability');
   return { ok: true };
 }
+
+const COOLDOWN_MINUTES = 5;
+
+export async function publishAvailability(message: string) {
+  const authed = await requireRole('coach');
+  const supabase = await createClient();
+
+  const text = (message ?? '').trim();
+  if (!text) return { ok: false, error: 'Write a message before publishing.' };
+  if (text.length > 500) return { ok: false, error: 'Message is too long (max 500 characters).' };
+
+  const { data: coach } = await supabase
+    .from('coach_profiles')
+    .select('groupme_bot_id, availability_last_published_at')
+    .eq('user_id', authed.user.id)
+    .maybeSingle();
+
+  if (!coach?.groupme_bot_id) {
+    return { ok: false, error: 'Add a GroupMe bot ID in your profile first.' };
+  }
+
+  if (coach.availability_last_published_at) {
+    const last = new Date(coach.availability_last_published_at).getTime();
+    const elapsedMin = (Date.now() - last) / 60000;
+    if (elapsedMin < COOLDOWN_MINUTES) {
+      const wait = Math.ceil(COOLDOWN_MINUTES - elapsedMin);
+      return { ok: false, error: `Just published. Try again in ${wait} min.` };
+    }
+  }
+
+  const { postToGroupMe } = await import('@/lib/notify/groupme');
+  const result = await postToGroupMe({ botId: coach.groupme_bot_id, text });
+  if (!result.ok) return { ok: false, error: result.error ?? 'GroupMe post failed.' };
+
+  const publishedAt = new Date().toISOString();
+  await supabase
+    .from('coach_profiles')
+    .update({ availability_last_published_at: publishedAt })
+    .eq('user_id', authed.user.id);
+
+  revalidatePath('/coach/availability');
+  return { ok: true, publishedAt };
+}
