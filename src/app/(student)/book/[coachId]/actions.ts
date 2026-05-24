@@ -59,8 +59,14 @@ export async function bookSlot(params: {
     return { ok: false, error: 'Booking window has closed for this time.' };
   }
 
-  const startMs = new Date(params.startIso).getTime();
-  const endMs = new Date(params.endIso).getTime();
+  const toMs = (v: string) => {
+    // Normalize Postgres 'YYYY-MM-DD HH:MM:SS+00' to ISO, then floor to seconds.
+    const iso = v.includes('T') ? v : v.replace(' ', 'T').replace('+00', 'Z');
+    return Math.floor(new Date(iso).getTime() / 1000) * 1000;
+  };
+
+  const startMs = toMs(params.startIso);
+  const endMs = toMs(params.endIso);
 
   // Pull all overlapping sessions via security-definer fn
   const { data: rangeSessions } = await supabase.rpc('coach_sessions_in_range', {
@@ -69,16 +75,16 @@ export async function bookSlot(params: {
     p_to: params.endIso,
   });
   const overlapping = ((rangeSessions as ExistingSession[]) ?? []).filter((s) => {
-    const ss = new Date(s.start_at).getTime();
-    const se = new Date(s.end_at).getTime();
+    const ss = toMs(s.start_at);
+    const se = toMs(s.end_at);
     return ss < endMs && startMs < se;
   });
 
   // Identify an exact-interval session matching this class type (the join target)
   const target = overlapping.find(
     (s) =>
-      new Date(s.start_at).getTime() === startMs &&
-      new Date(s.end_at).getTime() === endMs &&
+      toMs(s.start_at) === startMs &&
+      toMs(s.end_at) === endMs &&
       s.class_type_id === params.classTypeId
   );
 

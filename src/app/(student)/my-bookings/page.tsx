@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { MyBookingsClient } from './my-bookings-client';
-import { StudentMobileNav } from '@/components/student-mobile-nav';
 import { Wordmark } from '@/components/wordmark';
 import { HeaderAvatar } from '@/components/header-avatar';
 
@@ -148,7 +147,6 @@ export default async function MyBookingsPage() {
           recurring={recurringItems}
         />
       </main>
-      <StudentMobileNav />
     </div>
   );
 }
