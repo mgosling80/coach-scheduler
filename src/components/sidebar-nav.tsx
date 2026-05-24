@@ -36,7 +36,7 @@ export function SidebarNav({ items }: { items: SidebarNavItem[] }) {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-white rounded-xl shadow-sm border border-gray-100 p-2 h-fit">
+    <nav className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 p-2 h-fit">
       <ul className="space-y-0.5">
         {items.map((item) => {
           const Icon = ICONS[item.icon];

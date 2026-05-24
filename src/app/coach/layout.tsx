@@ -2,6 +2,7 @@ import { requireRole } from '@/lib/auth';
 import { Wordmark } from '@/components/wordmark';
 import { SidebarNav } from '@/components/sidebar-nav';
 import { HeaderAvatar } from '@/components/header-avatar';
+import { CoachMobileNav } from '@/components/coach-mobile-nav';
 
 export default async function CoachLayout({ children }: { children: React.ReactNode }) {
   const authed = await requireRole('coach');
@@ -33,10 +34,12 @@ export default async function CoachLayout({ children }: { children: React.ReactN
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-[210px_1fr] gap-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-[210px_1fr] gap-6 pb-20 md:pb-6">
         <SidebarNav items={navItems} />
         <main>{children}</main>
       </div>
+
+      <CoachMobileNav />
     </div>
   );
 }
