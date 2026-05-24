@@ -29,6 +29,7 @@ export async function previewRecurring(requestId: string): Promise<{
     classTypeId: req.class_type_id,
     dayOfWeek: req.day_of_week,
     startTime: req.start_time,
+    durationMinutes: req.duration_minutes ?? 60,
     horizonWeeks: req.horizon_weeks,
   });
 
@@ -62,6 +63,7 @@ export async function commitRecurring(requestId: string) {
     classTypeId: req.class_type_id,
     dayOfWeek: req.day_of_week,
     startTime: req.start_time,
+    durationMinutes: req.duration_minutes ?? 60,
     horizonWeeks: req.horizon_weeks,
   });
 

@@ -3,6 +3,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 type DayKey = typeof DAY_KEYS[number];
 
+const GRANULARITY_MIN = 30;
+const DURATIONS = [30, 60] as const;
+
 type AvailabilityBlock = {
   day_of_week: DayKey;
   start_time: string;
@@ -11,111 +14,80 @@ type AvailabilityBlock = {
   effective_until: string | null;
 };
 
-type Blackout = {
+type Blackout = { start_at: string; end_at: string };
+
+type ExistingSession = {
+  id: string;
+  class_type_id: string | null;
   start_at: string;
   end_at: string;
-};
-
-type ClassTypeInfo = {
-  id: string;
-  coach_id: string;
-  duration_minutes: number;
   capacity: number;
-  booking_window_hours: number | null;
-  cancel_window_hours: number | null;
+  booked_count: number;
 };
 
-type CoachDefaults = {
-  default_booking_window_hours: number;
-  default_cancel_window_hours: number;
+export type DurationOption = {
+  minutes: number;
+  endIso: string;
+  // 'free' = no overlap at all; 'joinable' = only overlaps sessions that
+  // might be joinable (cap>1 not full) — final eligibility resolved at booking.
+  state: 'free' | 'joinable';
 };
 
-export type Slot = {
-  start: Date;
-  end: Date;
-  bookedCount: number;
-  capacity: number;
-  isFull: boolean;
-  sessionId: string | null;
-  studentIsBooked: boolean;
-  studentIsWaitlisted: boolean;
+export type StartTime = {
+  startIso: string;
+  label: string; // "4:00 PM"
+  durations: DurationOption[];
 };
+
+export type DaySlots = {
+  date: string; // YYYY-MM-DD
+  label: string; // "Monday, June 2"
+  starts: StartTime[];
+};
+
+function overlaps(aStart: number, aEnd: number, bStart: number, bEnd: number) {
+  return aStart < bEnd && bStart < aEnd;
+}
 
 /**
- * Generate bookable slots for a class type over a date range.
- * Filters out: slots already past the booking window, slots inside blackouts.
- * Annotates: capacity, booked count, and whether the current student is booked or waitlisted.
+ * General slots: every 30 min start across the coach's general availability,
+ * each annotated with which durations (30/60) are feasible and their overlap state.
  */
-export async function getBookableSlots(
+export async function getGeneralSlots(
   supabase: SupabaseClient,
-  classType: ClassTypeInfo,
-  coachDefaults: CoachDefaults,
+  coachId: string,
+  bookingWindowHours: number,
   rangeStart: Date,
-  rangeEnd: Date,
-  studentId: string | null
-): Promise<Slot[]> {
-  // Pull availability blocks for this class type
+  rangeEnd: Date
+): Promise<DaySlots[]> {
   const { data: blocks } = await supabase
     .from('availability_blocks')
     .select('day_of_week, start_time, end_time, effective_from, effective_until')
-    .eq('coach_id', classType.coach_id)
-    .eq('class_type_id', classType.id)
+    .eq('coach_id', coachId)
     .eq('is_active', true);
 
-  // Pull blackouts that overlap the range
   const { data: blackouts } = await supabase
     .from('blackouts')
     .select('start_at, end_at')
-    .eq('coach_id', classType.coach_id)
+    .eq('coach_id', coachId)
     .lt('start_at', rangeEnd.toISOString())
     .gt('end_at', rangeStart.toISOString());
 
-  // Pull existing sessions for this class type in range
-  const { data: sessions } = await supabase
-    .from('sessions')
-    .select('id, start_at, capacity, cancelled')
-    .eq('coach_id', classType.coach_id)
-    .eq('class_type_id', classType.id)
-    .gte('start_at', rangeStart.toISOString())
-    .lte('start_at', rangeEnd.toISOString());
-
-  // Booking counts per session
-  const sessionIds = (sessions ?? []).map((s) => s.id);
-  const { data: bookings } = sessionIds.length
-    ? await supabase
-        .from('bookings')
-        .select('session_id, student_id, status')
-        .in('session_id', sessionIds)
-        .in('status', ['confirmed', 'completed', 'no_show'])
-    : { data: [] };
-
-  // Waitlist for the current student
-  const { data: waitlist } = sessionIds.length && studentId
-    ? await supabase
-        .from('waitlist_entries')
-        .select('session_id, student_id')
-        .in('session_id', sessionIds)
-        .eq('student_id', studentId)
-    : { data: [] };
-
-  const sessionsByStart = new Map<string, NonNullable<typeof sessions>[number]>();
-  (sessions ?? []).forEach((s) => {
-    if (!s.cancelled) sessionsByStart.set(s.start_at, s);
+  const { data: sessions } = await supabase.rpc('coach_sessions_in_range', {
+    p_coach_id: coachId,
+    p_from: rangeStart.toISOString(),
+    p_to: rangeEnd.toISOString(),
   });
 
-  const bookingCountBySession = new Map<string, number>();
-  const studentBookedSessions = new Set<string>();
-  (bookings ?? []).forEach((b) => {
-    bookingCountBySession.set(b.session_id, (bookingCountBySession.get(b.session_id) ?? 0) + 1);
-    if (studentId && b.student_id === studentId) studentBookedSessions.add(b.session_id);
-  });
+  const existing: ExistingSession[] = (sessions as ExistingSession[]) ?? [];
+  const blackoutRanges = (blackouts as Blackout[] ?? []).map((b) => [
+    new Date(b.start_at).getTime(),
+    new Date(b.end_at).getTime(),
+  ]);
 
-  const studentWaitlistedSessions = new Set((waitlist ?? []).map((w) => w.session_id));
+  const cutoff = Date.now() + bookingWindowHours * 3600 * 1000;
 
-  const bookingWindowHours = classType.booking_window_hours ?? coachDefaults.default_booking_window_hours;
-  const cutoff = new Date(Date.now() + bookingWindowHours * 3600 * 1000);
-
-  const slots: Slot[] = [];
+  const days: DaySlots[] = [];
   const cursor = new Date(rangeStart);
   cursor.setHours(0, 0, 0, 0);
   const endLimit = new Date(rangeEnd);
@@ -124,61 +96,99 @@ export async function getBookableSlots(
   while (cursor <= endLimit) {
     const dayKey = DAY_KEYS[cursor.getDay()];
     const dateStr = cursor.toISOString().slice(0, 10);
+    const starts: StartTime[] = [];
 
     for (const block of (blocks ?? []) as AvailabilityBlock[]) {
       if (block.day_of_week !== dayKey) continue;
       if (block.effective_from > dateStr) continue;
       if (block.effective_until && block.effective_until < dateStr) continue;
 
-      // Emit slots at duration intervals
       const [bsh, bsm] = block.start_time.split(':').map(Number);
       const [beh, bem] = block.end_time.split(':').map(Number);
-      const blockStart = new Date(cursor);
-      blockStart.setHours(bsh, bsm, 0, 0);
-      const blockEnd = new Date(cursor);
-      blockEnd.setHours(beh, bem, 0, 0);
+      const blockStart = new Date(cursor); blockStart.setHours(bsh, bsm, 0, 0);
+      const blockEnd = new Date(cursor); blockEnd.setHours(beh, bem, 0, 0);
 
-      let slotStart = new Date(blockStart);
-      while (slotStart.getTime() + classType.duration_minutes * 60000 <= blockEnd.getTime()) {
-        const slotEnd = new Date(slotStart.getTime() + classType.duration_minutes * 60000);
+      let t = new Date(blockStart);
+      while (t.getTime() < blockEnd.getTime()) {
+        const startMs = t.getTime();
 
-        // Skip past booking window
-        if (slotStart < cutoff) {
-          slotStart = new Date(slotStart.getTime() + classType.duration_minutes * 60000);
-          continue;
+        if (startMs >= cutoff) {
+          const durations: DurationOption[] = [];
+
+          for (const dur of DURATIONS) {
+            const endMs = startMs + dur * 60000;
+            if (endMs > blockEnd.getTime()) continue; // doesn't fit window
+
+            // blackout overlap blocks it
+            const inBlackout = blackoutRanges.some(([bs, be]) => overlaps(startMs, endMs, bs, be));
+            if (inBlackout) continue;
+
+            // Examine overlapping existing sessions
+            let blocked = false;
+            let onlyJoinable = false;
+            for (const s of existing) {
+              const ss = new Date(s.start_at).getTime();
+              const se = new Date(s.end_at).getTime();
+              if (!overlaps(startMs, endMs, ss, se)) continue;
+
+              // An overlap exists. It's potentially joinable ONLY if it's an
+              // exact same-interval session with capacity room. Otherwise blocked.
+              const exactInterval = ss === startMs && se === endMs;
+              const hasRoom = s.booked_count < s.capacity;
+              if (exactInterval && s.capacity > 1 && hasRoom) {
+                onlyJoinable = true; // could join if type matches
+              } else {
+                blocked = true;
+                break;
+              }
+            }
+            if (blocked) continue;
+
+            durations.push({
+              minutes: dur,
+              endIso: new Date(endMs).toISOString(),
+              state: onlyJoinable ? 'joinable' : 'free',
+            });
+          }
+
+          if (durations.length > 0) {
+            starts.push({
+              startIso: new Date(startMs).toISOString(),
+              label: new Date(startMs).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+              }),
+              durations,
+            });
+          }
         }
 
-        // Skip if overlaps a blackout
-        const inBlackout = (blackouts ?? []).some(
-          (b) => new Date(b.start_at) < slotEnd && new Date(b.end_at) > slotStart
-        );
-        if (inBlackout) {
-          slotStart = new Date(slotStart.getTime() + classType.duration_minutes * 60000);
-          continue;
-        }
-
-        const existingSession = sessionsByStart.get(slotStart.toISOString());
-        const sessionId = existingSession?.id ?? null;
-        const capacity = existingSession?.capacity ?? classType.capacity;
-        const bookedCount = sessionId ? bookingCountBySession.get(sessionId) ?? 0 : 0;
-
-        slots.push({
-          start: new Date(slotStart),
-          end: new Date(slotEnd),
-          bookedCount,
-          capacity,
-          isFull: bookedCount >= capacity,
-          sessionId,
-          studentIsBooked: sessionId ? studentBookedSessions.has(sessionId) : false,
-          studentIsWaitlisted: sessionId ? studentWaitlistedSessions.has(sessionId) : false,
-        });
-
-        slotStart = new Date(slotStart.getTime() + classType.duration_minutes * 60000);
+        t = new Date(startMs + GRANULARITY_MIN * 60000);
       }
+    }
+
+    if (starts.length > 0) {
+      // de-dupe starts that could arise from overlapping blocks, keep first
+      const seen = new Set<string>();
+      const uniqueStarts = starts.filter((s) => {
+        if (seen.has(s.startIso)) return false;
+        seen.add(s.startIso);
+        return true;
+      });
+      uniqueStarts.sort((a, b) => a.startIso.localeCompare(b.startIso));
+      days.push({
+        date: dateStr,
+        label: new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+        }),
+        starts: uniqueStarts,
+      });
     }
 
     cursor.setDate(cursor.getDate() + 1);
   }
 
-  return slots;
+  return days;
 }

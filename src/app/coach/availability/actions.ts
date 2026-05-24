@@ -9,7 +9,6 @@ const dayEnum = z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']);
 
 const availabilitySchema = z
   .object({
-    class_type_id: z.string().uuid('Pick a class type'),
     day_of_week: dayEnum,
     start_time: z.string().regex(/^\d{2}:\d{2}$/, 'Use HH:MM'),
     end_time: z.string().regex(/^\d{2}:\d{2}$/, 'Use HH:MM'),
@@ -28,7 +27,6 @@ export async function createAvailabilityBlock(formData: FormData) {
   const supabase = await createClient();
 
   const parsed = availabilitySchema.safeParse({
-    class_type_id: formData.get('class_type_id'),
     day_of_week: formData.get('day_of_week'),
     start_time: formData.get('start_time'),
     end_time: formData.get('end_time'),
@@ -42,7 +40,7 @@ export async function createAvailabilityBlock(formData: FormData) {
 
   const { error } = await supabase.from('availability_blocks').insert({
     coach_id: authed.user.id,
-    class_type_id: parsed.data.class_type_id,
+    class_type_id: null,
     day_of_week: parsed.data.day_of_week,
     start_time: parsed.data.start_time,
     end_time: parsed.data.end_time,

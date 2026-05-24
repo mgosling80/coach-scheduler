@@ -11,6 +11,7 @@ const schema = z.object({
   class_type_id: z.string().uuid(),
   day_of_week: z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']),
   start_time: z.string().regex(/^\d{2}:\d{2}$/),
+  duration_minutes: z.coerce.number().int().refine((v) => v === 30 || v === 60, 'Pick 30 or 60'),
   horizon_weeks: z.coerce.number().int().min(1).max(52),
 });
 
@@ -23,6 +24,7 @@ export async function requestRecurring(formData: FormData) {
     class_type_id: formData.get('class_type_id'),
     day_of_week: formData.get('day_of_week'),
     start_time: formData.get('start_time'),
+    duration_minutes: formData.get('duration_minutes'),
     horizon_weeks: formData.get('horizon_weeks'),
   });
 
@@ -47,6 +49,7 @@ export async function requestRecurring(formData: FormData) {
     class_type_id: parsed.data.class_type_id,
     day_of_week: parsed.data.day_of_week,
     start_time: parsed.data.start_time,
+    duration_minutes: parsed.data.duration_minutes,
     horizon_weeks: parsed.data.horizon_weeks,
     status: 'pending',
   });
