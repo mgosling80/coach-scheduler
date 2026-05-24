@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Wordmark } from '@/components/wordmark';
 import { HeaderAvatar } from '@/components/header-avatar';
 import { requireAuth } from '@/lib/auth';
@@ -8,11 +7,39 @@ import { AccountClient } from './client';
 export default async function AccountPage() {
   const authed = await requireAuth();
   const supabase = await createClient();
+
   const { data: profile } = await supabase
     .from('profiles')
-    .select('photo_url')
+    .select('full_name, phone, photo_url')
     .eq('id', authed.user.id)
     .maybeSingle();
+
+  const isStudent = authed.roles.includes('student');
+
+  let studentProfile = {
+    phone: profile?.phone ?? '',
+    age: '',
+    gym: '',
+    level: '',
+    team: '',
+    comments: '',
+  };
+
+  if (isStudent) {
+    const { data: sp } = await supabase
+      .from('student_profiles')
+      .select('age, gym, level, team, comments')
+      .eq('user_id', authed.user.id)
+      .maybeSingle();
+    studentProfile = {
+      phone: profile?.phone ?? '',
+      age: sp?.age?.toString() ?? '',
+      gym: sp?.gym ?? '',
+      level: sp?.level ?? '',
+      team: sp?.team ?? '',
+      comments: sp?.comments ?? '',
+    };
+  }
 
   return (
     <div className="min-h-screen bg-[var(--cream)]">
@@ -32,7 +59,13 @@ export default async function AccountPage() {
             <h2 className="text-xl font-extrabold font-display text-[var(--navy-900)]">Account</h2>
             <p className="text-sm text-[var(--muted)] mt-1">Signed in as {authed.user.email}</p>
           </div>
-          <AccountClient currentEmail={authed.user.email ?? ''} photoUrl={profile?.photo_url ?? ''} />
+          <AccountClient
+            currentEmail={authed.user.email ?? ''}
+            photoUrl={profile?.photo_url ?? ''}
+            isStudent={isStudent}
+            fullName={profile?.full_name ?? ''}
+            studentProfile={studentProfile}
+          />
         </div>
       </main>
     </div>
