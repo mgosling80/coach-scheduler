@@ -117,7 +117,7 @@ export function AccountClient({
       <section className="pt-6 border-t border-gray-100 flex items-center justify-between">
         <span className="text-sm text-[var(--muted)]">Signed in as {currentEmail}</span>
         <form action="/auth/signout" method="post">
-          <button type="submit" className="cp-btn-primary px-4 py-2 rounded-lg text-sm font-semibold">
+          <button type="submit" className="px-4 py-2 rounded-lg text-sm font-semibold text-red-600 border border-red-300 hover:bg-red-50">
             Sign out
           </button>
         </form>
