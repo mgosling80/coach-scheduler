@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
-import { ArrowRight, Calendar, Users, Shield, Bell, Settings } from 'lucide-react';
+import { ArrowRight, Calendar, Users, ClipboardList } from 'lucide-react';
 import { Wordmark } from '@/components/wordmark';
 import { HeaderAvatar } from '@/components/header-avatar';
 
@@ -90,36 +90,25 @@ export default async function DashboardPage() {
         )}
 
         {isCoach && (
-          <DashCard
-            href="/coach/profile"
-            icon={Users}
+          <SectionPanel
             title="Coach area"
-            description="Manage your profile, class types, availability, and students."
+            items={[
+              { href: '/coach/schedule', label: 'Schedule', icon: Calendar },
+              { href: '/coach/students', label: 'My students', icon: Users },
+            ]}
           />
         )}
 
         {isAdmin && (
-          <DashCard
-            href="/admin/students"
-            icon={Shield}
+          <SectionPanel
             title="Admin area"
-            description="Assign students to coaches and manage approvals."
+            items={[
+              { href: '/admin/students', label: 'All students', icon: Users },
+              { href: '/admin/recurring', label: 'Recurring requests', icon: ClipboardList },
+            ]}
           />
         )}
 
-        <DashCard
-          href="/preferences"
-          icon={Bell}
-          title="Notification preferences"
-          description="Choose how and when we contact you."
-        />
-
-        <DashCard
-          href="/account"
-          icon={Settings}
-          title="Account"
-          description="Change email, password, or delete account."
-        />
       </main>
     </div>
   );
@@ -159,3 +148,39 @@ function DashCard({
     </Link>
   );
 }
+
+function SectionPanel({
+  title,
+  items,
+}: {
+  title: string;
+  items: { href: string; label: string; icon: React.ElementType }[];
+}) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="px-6 py-4 border-b border-gray-100">
+        <h3 className="text-lg font-bold font-display text-[var(--navy-900)]">{title}</h3>
+      </div>
+      <ul className="divide-y divide-gray-100">
+        {items.map((item) => {
+          const Icon = item.icon;
+          return (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 transition group"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon className="w-4 h-4 text-[var(--blue-600)]" />
+                  <span className="text-sm font-semibold text-[var(--navy-900)]">{item.label}</span>
+                </div>
+                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[var(--blue-600)] transition" />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+

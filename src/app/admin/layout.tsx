@@ -2,6 +2,7 @@ import { requireRole } from '@/lib/auth';
 import { Wordmark } from '@/components/wordmark';
 import { SidebarNav } from '@/components/sidebar-nav';
 import { HeaderAvatar } from '@/components/header-avatar';
+import { CoachMobileNav } from '@/components/coach-mobile-nav';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const authed = await requireRole('admin');
@@ -33,6 +34,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <SidebarNav items={navItems} />
         <main>{children}</main>
       </div>
+    <CoachMobileNav />
     </div>
   );
 }
